@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 — Page introuvable · Damien Dathueyt</title>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <style>
+        .err-wrap {
+            min-height: 80vh;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center;
+            padding: 2rem;
+        }
+        .err-code {
+            font-family: var(--font-mono);
+            font-size: clamp(3rem, 12vw, 6rem);
+            font-weight: 500;
+            color: var(--color-accent);
+            line-height: 1;
+            letter-spacing: -0.04em;
+        }
+        .err-title { font-size: 1.5rem; margin: 1rem 0 0.5rem; color: var(--color-text-strong); font-weight: 500; }
+        .err-msg { color: var(--color-text-muted); margin-bottom: 1.5rem; max-width: 480px; }
+    </style>
+</head>
+<body>
+    <main class="err-wrap">
+        <p class="section-tag">// ERROR_404</p>
+        <div class="err-code">404</div>
+        <h1 class="err-title">Page introuvable</h1>
+        <p class="err-msg">
+            La ressource demandée n'existe pas ou a été déplacée.
+            <br>Aucun journal n'a été corrompu — promis.
+        </p>
+        <a href="/" class="btn btn-primary">← Retour à l'accueil</a>
+    </main>
+</body>
+</html>
