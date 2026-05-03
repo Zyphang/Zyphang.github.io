@@ -111,7 +111,7 @@ const portfolioData = {
             title: "Projet cryptographie",
             year: "2026",
             description: "Étude des algorithmes symétriques et asymétriques (AES, RSA), implémentation pédagogique en Python pour un système de messagerie.",
-            tags: ["Cryptography", "Python", "AES · RSA"],
+            tags: ["Cryptographie", "Python", "AES · RSA"],
             url: ""
         },
         {
