@@ -31,20 +31,50 @@
     const $  = (sel, root = document) => root.querySelector(sel);
     const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
 
-    /** Crée un élément HTML avec attributs et enfants en une ligne. */
+    /** Crée un élément HTML avec attributs et enfants en une ligne.
+     *  SÉCURITÉ : aucune clé n'accepte de HTML brut. Le texte passe
+     *  exclusivement par textContent → échappement automatique par le
+     *  navigateur, aucune interprétation de balise possible (protection XSS
+     *  par construction, OWASP A03). */
     function el(tag, attrs = {}, children = []) {
         const node = document.createElement(tag);
         for (const [key, value] of Object.entries(attrs)) {
             if (key === 'class') node.className = value;
-            else if (key === 'html') node.innerHTML = value;
             else if (key === 'text') node.textContent = value;
-            else if (key.startsWith('data-')) node.setAttribute(key, value);
             else node.setAttribute(key, value);
         }
         (Array.isArray(children) ? children : [children])
             .filter(Boolean)
             .forEach(c => node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
         return node;
+    }
+
+    /** Parse une chaîne SVG (constante interne du fichier, jamais une donnée
+     *  externe) en nœud DOM réel, sans passer par innerHTML. */
+    function svgNode(markup) {
+        const doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
+        const svg = doc.documentElement;
+        return svg && svg.nodeName === 'svg' ? document.importNode(svg, true) : null;
+    }
+
+    /** Rendu de texte enrichi : seuls <strong> et <em> sont reconnus, et ils
+     *  sont recréés via createElement. Toute autre balise présente dans la
+     *  donnée est traitée comme du texte littéral et affichée telle quelle.
+     *  Aucune chaîne n'est jamais interprétée comme du HTML. */
+    function renderRichText(target, raw) {
+        target.textContent = '';
+        const re = /<(strong|em)>([\s\S]*?)<\/\1>/gi;
+        let last = 0, m;
+        while ((m = re.exec(raw)) !== null) {
+            if (m.index > last) {
+                target.appendChild(document.createTextNode(raw.slice(last, m.index)));
+            }
+            target.appendChild(el(m[1].toLowerCase(), { text: m[2] }));
+            last = re.lastIndex;
+        }
+        if (last < raw.length) {
+            target.appendChild(document.createTextNode(raw.slice(last)));
+        }
     }
 
 
@@ -62,10 +92,10 @@
             const target = $(`[data-text-id="${id}"]`);
             if (target) target.textContent = value;
         }
-        // Description : autorise du HTML (pour les <strong>) — c'est notre
-        // propre contenu, donc pas de risque XSS
+        // Description : peut contenir <strong>/<em> pour la mise en valeur.
+        // On ne l'injecte PAS en innerHTML — on reconstruit les nœuds à la main.
         const desc = $('[data-text-id="hero-description"]');
-        if (desc) desc.innerHTML = data.identity.description;
+        if (desc) renderRichText(desc, data.identity.description);
     }
 
 
@@ -89,9 +119,11 @@
                 class: 'btn btn-primary',
                 href: data.cta.cv.href,
                 download: '',
-                'aria-label': 'Télécharger le CV en PDF',
-                html: icons.download + '<span>' + data.cta.cv.label + '</span>'
-            }));
+                'aria-label': 'Télécharger le CV en PDF'
+            }, [
+                svgNode(icons.download),
+                el('span', { text: data.cta.cv.label })
+            ]));
         }
         // GitHub
         if (data.cta.github.enabled) {
@@ -100,9 +132,11 @@
                 href: data.contact.githubUrl,
                 target: '_blank',
                 rel: 'noopener noreferrer',
-                'aria-label': 'Voir mon profil GitHub',
-                html: icons.github + '<span>' + data.cta.github.label + '</span>'
-            }));
+                'aria-label': 'Voir mon profil GitHub'
+            }, [
+                svgNode(icons.github),
+                el('span', { text: data.cta.github.label })
+            ]));
         }
         // LinkedIn
         if (data.cta.linkedin.enabled) {
@@ -111,9 +145,11 @@
                 href: data.contact.linkedinUrl,
                 target: '_blank',
                 rel: 'noopener noreferrer',
-                'aria-label': 'Voir mon profil LinkedIn',
-                html: icons.linkedin + '<span>' + data.cta.linkedin.label + '</span>'
-            }));
+                'aria-label': 'Voir mon profil LinkedIn'
+            }, [
+                svgNode(icons.linkedin),
+                el('span', { text: data.cta.linkedin.label })
+            ]));
         }
     }
 
