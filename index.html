@@ -6,13 +6,35 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <!-- ══════════════════════════════════════════════════════════════════
+         SÉCURITÉ — Content Security Policy
+         GitHub Pages ne permet pas d'envoyer des en-têtes HTTP personnalisés :
+         la CSP est donc posée en <meta http-equiv>. Limite assumée — en balise
+         meta, les directives frame-ancestors, sandbox et report-uri sont
+         ignorées par les navigateurs (donc pas d'anti-clickjacking possible
+         ici sans reverse proxy type Cloudflare).
+         default-src 'none' = tout est refusé par défaut, on ouvre au cas par cas.
+         ══════════════════════════════════════════════════════════════════ -->
+    <meta http-equiv="Content-Security-Policy" content="
+        default-src 'none';
+        script-src 'self';
+        style-src 'self' https://fonts.googleapis.com;
+        font-src 'self' https://fonts.gstatic.com;
+        img-src 'self' data:;
+        base-uri 'none';
+        form-action 'none';
+        upgrade-insecure-requests">
+
+    <!-- Limite la fuite d'URL vers les sites tiers (honoré en meta) -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+
+    <!-- ══════════════════════════════════════════════════════════════════
          SEO & métadonnées
          À PERSONNALISER : title, description, et l'URL canonique
          ══════════════════════════════════════════════════════════════════ -->
     <title>Damien Dathueyt — Cyberfolio · Étudiant cybersécurité</title>
     <meta name="description" content="Portfolio cybersécurité de Damien Dathueyt (alias Zyphang), étudiant à Guardia Cybersecurity School à Lyon, orienté GRC et conseil cyber.">
     <meta name="author" content="Damien Dathueyt">
-    <meta name="keywords" content="cybersécurité, GRC, gouvernance, risque, conformité, Lyon, Guardia, étudiant, stage, alternance, cyber, ISO 27001, EBIOS">
+    <meta name="keywords" content="cybersécurité, GRC, gouvernance, risque, conformité, Lyon, Guardia, étudiant, stage, cyber, ISO 27001, EBIOS">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://zyphang.github.io/">
 
@@ -121,8 +143,8 @@
                 <p class="section-tag">02 // COMPÉTENCES</p>
                 <h2 id="skills-title" class="section-title">Stack technique &amp; méthodologique</h2>
                 <p class="section-intro">
-                    Auto-évaluation honnête de mon niveau actuel. La plupart des sujets sont en cours d'apprentissage,
-                    je préfère afficher la réalité plutôt que de me surestimer.
+                    Auto-évaluation honnête de mon niveau actuel. La plupart des sujets sont en cours d'apprentissage —
+                    je préfère afficher la réalité plutôt que de surestimer.
                 </p>
 
                 <div class="skills-grid" id="skills-grid">
@@ -139,7 +161,7 @@
                 <p class="section-tag">03 // PROJETS</p>
                 <h2 id="projects-title" class="section-title">Projets &amp; travaux</h2>
                 <p class="section-intro">
-                    Sélection de projets académiques et personnels. Les futurs writeups détaillés seront disponibles
+                    Sélection de projets académiques et personnels. Les writeups détaillés sont disponibles
                     sur GitHub.
                 </p>
 
@@ -175,8 +197,8 @@
                 <p class="section-tag">05 // EXPÉRIENCE &amp; ENGAGEMENTS</p>
                 <h2 id="exp-title" class="section-title">Parcours</h2>
                 <p class="section-intro">
-                    Engagements cyber actuels et expériences professionnelles antérieures,
-                    chacun ayant nourri ma rigueur et mon sens du travail.
+                    Engagements cyber actuels et expériences professionnelles antérieures —
+                    chacun ayant nourri ma rigueur et mon sens du collectif.
                 </p>
 
                 <ol class="timeline" id="timeline">
@@ -233,7 +255,7 @@
     <footer class="site-footer" role="contentinfo">
         <div class="container footer-row">
             <span>© <span id="footer-year"></span> Damien Dathueyt</span>
-            <span class="footer-build">build.v1.003 · 100% statique · hébergé sur GitHub Pages</span>
+            <span class="footer-build">build.v1.0 · 100% statique · hébergé sur GitHub Pages</span>
         </div>
     </footer>
 </body>
