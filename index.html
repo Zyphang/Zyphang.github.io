@@ -81,12 +81,12 @@
     <!-- ═══════════════════════════ 01 · PROFIL ═══════════════════════════ -->
     <section id="profil" class="section hero" aria-labelledby="hero-title">
         <div class="container">
-            <p class="status"><span class="status-dot" aria-hidden="true"></span>Recherche une alternance · stage possible de mai à septembre</p>
+            <p class="status"><span class="status-dot" aria-hidden="true"></span>Recherche une alternance (3 ans) ou stage (2-4 mois) de mai à septembre</p>
 
             <h1 id="hero-title" class="hero-title">Damien Dathueyt</h1>
             <p class="hero-role">Étudiant en cybersécurité · <span class="muted">Guardia Cybersecurity School, Lyon</span></p>
             <p class="hero-lead">
-                De la salle d'un palace à la cybersécurité : même exigence, nouveau terrain.
+                D'un bar de luxe à la cybersécurité : même exigence, nouveau terrain.
                 Je m'oriente vers la <strong>GRC</strong> et le <strong>conseil cyber</strong>.
             </p>
 
@@ -104,7 +104,7 @@
                 <article class="card">
                     <h2 class="card-title">Qui je suis</h2>
                     <p>
-                        Après plusieurs années dans la <strong>restauration haut de gamme et le bar en palace</strong>,
+                        Après plusieurs années dans la <strong>restauration haut de gamme et le bar dans un hôtel luxueux </strong>,
                         j'ai choisi de me reconvertir dans la cybersécurité. Étudiant à <strong>Guardia Cybersecurity School</strong>
                         et membre du <strong>CLUSIR Auvergne-Rhône-Alpes</strong>, j'apporte à ce métier ce que le service
                         d'excellence m'a appris : rigueur, sang-froid sous pression et sens du client.
@@ -115,7 +115,7 @@
                 <article class="card">
                     <h2 class="card-title">Ma reconversion</h2>
                     <ol class="path">
-                        <li><span class="path-step">Avant</span>Restauration haut de gamme &amp; bar en palace</li>
+                        <li><span class="path-step">Avant</span>Restauration haut de gamme &amp; bar d'hôtel de luxe</li>
                         <li><span class="path-step">Déclic</span>En restauration, voyager et travailler étaient difficiles à concilier. Avec un ordinateur, on peut évoluer dans une entreprise, au bureau comme dans un café.</li>
                         <li><span class="path-step">Aujourd'hui</span>Bachelor cybersécurité — Guardia, Lyon</li>
                         <li><span class="path-step">Objectif</span>GRC &amp; conseil en cybersécurité</li>
@@ -225,57 +225,14 @@
             <h2 id="projects-title" class="section-title">Projets</h2>
             <p class="section-intro">Projets de cours et réalisations mises en production.</p>
 
-            <div class="project-tools">
-                <div class="filters" data-filter="projects" role="group" aria-label="Filtrer les projets">
-                    <button type="button" data-value="all" aria-pressed="true">Tous</button>
-                    <button type="button" data-value="cours" aria-pressed="false">Cours</button>
-                    <button type="button" data-value="prod" aria-pressed="false">En prod</button>
-                </div>
-                <div class="search">
-                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-                    <label for="project-search" class="sr-only">Rechercher un projet par titre ou par tag</label>
-                    <input id="project-search" type="search" placeholder="Rechercher : titre ou tag (ex. Wazuh)" autocomplete="off" spellcheck="false" maxlength="60">
-                </div>
+            <div class="filters" data-filter="projects" role="group" aria-label="Filtrer les projets">
+                <button type="button" data-value="all" aria-pressed="true">Tous</button>
+                <button type="button" data-value="cours" aria-pressed="false">Cours</button>
+                <button type="button" data-value="prod" aria-pressed="false">En prod</button>
             </div>
-            <p class="search-status" id="project-status" aria-live="polite"></p>
 
             <div class="grid-3" id="projects">
                 <!-- NOUVEAU PROJET : ne pas supprimer ce repère (utilisé par tools/nouveau-projet.sh) -->
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
-                    <h3 class="card-title">Reverse Engineering capteur Wi-Fi</h3>
-                    <p>Rétro-ingénierie matérielle d'un détecteur d'ouverture basé sur ESP8266. Analyse de la gestion d'énergie, interception du trafic réseau (MQTT/TLS) et audit des vulnérabilités physiques via l'exploitation du port UART.</p>
-                    <ul class="tags"><li>Reverse Engineering</li><li>IoT</li><li>ESP8266</li><li>Wireshark</li></ul>
-                </article>
-
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
-                    <h3 class="card-title">Reverse Engineering d'un objet IoT</h3>
-                    <p>Rétro-ingénierie matérielle et logicielle d'un système RFID (module MFRC522 / Arduino. Analyse des protocoles de communication, désobfuscation du code source et identification des vulnérabilités de conception (UID exposé, spoofing)</p>
-                    <ul class="tags"><li>Reverse Engineering</li><li>IoT</li><li>RFID</li><li>Arduino</li></ul>
-                </article>
-
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
-                    <h3 class="card-title">Maîtrise de l'information (OSINT)</h3>
-                    <p>Pratique du cycle du renseignement dans un cadre légal strict. Élaboration de plans de recherche OSINT (cas Groupe Casino) et rédaction de synthèses stratégiques pour évaluer la fiabilité des informations.</p>
-                    <ul class="tags"><li>OSINT</li><li>Due Diligence</li><li>Analyse de sources</li><li>CTI</li></ul>
-                </article>
-
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
-                    <h3 class="card-title">Techniques de base de pentesting</h3>
-                    <p>Apprentissage de la méthodologie globale d'un test d'intrusion. Maîtrise des phases d'énumération (Nmap, Shodan, Burp Suite), d'exploitation de vulnérabilités Web (SQLi, XSS, LFI) et des concepts d'ingénierie sociale. Accompagné d'une intrusion sur une machine préparer par l'école</p>
-                    <ul class="tags"><li>Pentesting</li><li>Vulnérabilités Web</li><li>SQLi</li><li>Burp Suite</li></ul>
-                </article>
-
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
-                    <h3 class="card-title">Cybersécurité industrielle (OT / IoT)</h3>
-                    <p>Introduction à la sécurité des systèmes industriels. Analyse d'incidents majeurs (étude du ransomware de Norsk Hydro) et apprentissage des stratégies de protection des infrastructures critiques via la défense en profondeur.</p>
-                    <ul class="tags"><li>OT / IoT</li><li>Défense en profondeur</li><li>Analyse de risques</li><li>ICS</li></ul>
-                </article>
-
                 <article class="card project" data-type="cours">
                     <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
                     <h3 class="card-title">Introduction au cyberespace</h3>
@@ -299,8 +256,8 @@
 
                 <article class="card project" data-type="prod">
                     <div class="card-meta"><span class="badge badge-prod">En prod</span><span>2026</span></div>
-                    <h3 class="card-title">Ce cyberfolio</h3>
-                    <p>Site statique durci : CSP stricte avec Trusted Types, zéro dépendance ni traceur, anti-clickjacking, email anti-scraping, CI de sécurité (détection de secrets, contrôle de la CSP).</p>
+                    <h3 class="card-title">Développement du Cyberfolio</h3>
+                    <p>Création d'un site statique durci sans aucun traceur. Mise en œuvre d'une CSP stricte avec Trusted Types, d'une protection anti-clickjacking et d'une CI de sécurité automatisée.</p>
                     <ul class="tags"><li>Sécurité web</li><li>CSP</li><li>CI/CD</li></ul>
                     <a class="card-link" href="https://github.com/Zyphang/Zyphang.github.io" target="_blank" rel="noopener noreferrer">Code source →</a>
                 </article>
@@ -322,8 +279,8 @@
                 <article class="card project" data-type="cours">
                     <div class="card-meta"><span class="badge">Cours</span><span>2025</span></div>
                     <h3 class="card-title">Initiation DevSecOps</h3>
-                    <p>Intégration d'outils de sécurité (SAST, analyse des dépendances) dans une pipeline CI/CD GitHub Actions sur un projet web simple.</p>
-                    <ul class="tags"><li>DevSecOps</li><li>CI/CD</li><li>SAST</li></ul>
+                    <p>Développement d'une application Python (API REST) avec Docker. Déploiement d'une pipeline CI/CD GitHub Actions automatisant les tests (pytest), la qualité du code et l'intégration de contrôles de sécurité (SAST, SCA).</p>
+                    <ul class="tags"><li>DevSecOps</li><li>CI/CD</li><li>SAST/SCA</li><li>Docker</li></ul>
                 </article>
 
                 <article class="card project" data-type="prod">
@@ -332,10 +289,6 @@
                     <p>Pendant mon stage, mise en place d'automatisations utilisées au quotidien, par exemple l'extraction de tous les messages Discord d'un jeu vers une base de données Notion. Des tâches d'une demi-journée ramenées à une heure maximum.</p>
                     <ul class="tags"><li>Automatisation</li><li>Agents IA</li><li>MCP</li><li>Notion</li></ul>
                 </article>
-            </div>
-            <div class="search-empty" id="project-empty" hidden>
-                <p>Aucun projet ne correspond à ta recherche.</p>
-                <button class="btn btn-small btn-ghost" type="button" id="project-clear">Tout afficher</button>
             </div>
         </div>
     </section>
@@ -481,7 +434,7 @@
                     <details class="tl-details">
                         <summary>
                             <div class="tl-head">
-                                <h3 class="tl-title">Restauration haut de gamme &amp; bar en palace</h3>
+                                <h3 class="tl-title">Restauration haut de gamme &amp; bar d'hôtel de luxe</h3>
                                 <span class="tl-period">4 ans</span>
                             </div>
                             <span class="badge">Avant la cyber</span>
@@ -491,7 +444,7 @@
                         <div class="tl-body">
                             <h4 class="tl-body-title">Missions</h4>
                             <ul class="tl-missions">
-                                <li>Barman dans un hôtel 4★, service haut de gamme au Golf du Gouverneur</li>
+                                <li>Barman dans un hôtel 4★ service 5★, service haut de gamme au Golf du Gouverneur</li>
                                 <li>Responsable de salle au Chaudron</li>
                                 <li>Encadrement d'une équipe de 5 serveurs : organisation du service et formation</li>
                                 <li>Relation avec une clientèle exigeante, gestion des priorités en plein rush</li>
