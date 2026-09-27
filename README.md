@@ -1,6 +1,6 @@
 # Cyberfolio — Damien Dathueyt (Zyphang)
 
-Portfolio cybersécurité statique publié sur **https://zyphang.github.io/**.
+Portfolio cybersécurité statique publié sur **https://zyphang.github.io/**
 HTML / CSS / JavaScript natif, aucune dépendance, aucun build, aucune ressource tierce.
 
 ```
@@ -32,17 +32,15 @@ HTML / CSS / JavaScript natif, aucune dépendance, aucun build, aucune ressource
 
 ## Modifier le contenu
 
-Tout le contenu est **directement dans `index.html`**, section par section (repère les bandeaux `═══ 01 · PROFIL ═══`, etc.).
+Tout le contenu est **directement dans `index.html`**, section par section.
 Pas de fichier de données ni de rendu JavaScript : le site s'affiche même sans JS et aucun contenu n'est injecté dans la page.
 
-- **Textes à compléter** : tout ce qui est en orange sur le site (`class="todo"` / `todo-block` dans le code). Remplace le texte et retire la classe.
 - **Compétence** : copie un `<li class="skill" data-level="1">`. Niveaux : 1 notions · 2 en progression · 3 opérationnel · 4 confirmé.
-- **Projet** : le plus simple, `bash tools/nouveau-projet.sh` (il pose les questions et ajoute la carte en tête de la section). À la main : copie un `<article class="card project" data-type="…">` ; `data-type` = `cours`, `perso` ou `prod` (utilisé par le filtre). Ne supprime pas le repère `NOUVEAU PROJET` dans `index.html`.
+- **Projet** : le plus simple, `bash tools/nouveau-projet.sh` ou à la main : copie un `<article class="card project" data-type="…">` ; `data-type` = `cours`, `perso` ou `prod` (utilisé par le filtre). Ne supprime pas le repère `NOUVEAU PROJET` dans `index.html`.
 - **Certification** : `cert cert-done` (obtenue) ou `cert cert-planned` (prévue).
 - **Expérience** : copie un `<li class="tl-item" data-type="…">`. `data-type` = `stage`, `ctf`, `clusir` ou `avant`.
 - **CV** : dépose `assets/docs/CV.pdf` et décommente le bouton dans la section Profil (pense à retirer les métadonnées du PDF : `exiftool -all= CV.pdf`).
-- **Email** : il est stocké en Base64, en deux morceaux (`data-u` / `data-d` du bouton « Afficher »). Pour le changer :
-  `printf 'nouveau' | base64` et `printf 'domaine.fr' | base64`.
+- **Email** : il est stocké en Base64, en deux morceaux (`data-u` / `data-d`)
 
 Avant chaque push : `bash tools/check-security.sh`.
 
@@ -88,7 +86,7 @@ Pour une nouvelle mission, ajoute un bloc dans `window.MISSIONS` et une carte da
 | Actions GitHub compromises | Actions épinglées par SHA de commit, jeton en lecture seule, mises à jour via Dependabot |
 | Divulgation responsable | `security.txt` (RFC 9116) + `SECURITY.md` |
 
-### Limites connues (à assumer, et à savoir expliquer en entretien)
+### Limites connues
 
 GitHub Pages **ne permet pas d'envoyer d'en-têtes HTTP personnalisés**. Donc :
 - `frame-ancestors`, `report-uri` et `sandbox` sont ignorés en `<meta>` → l'anti-clickjacking repose sur JavaScript ;

@@ -130,7 +130,7 @@
                         <li>Voyage</li>
                         <li>Sport de haut niveau</li>
                     </ul>
-                    <p>Le voyage m'apporte culture et maturité : comprendre les autres cultures, c'est la vraie richesse. Le sport de haut niveau m'inspire par la discipline qu'il demande, répéter des milliers de fois le même geste pour dépasser la moyenne.</p>
+                    <p>Le voyage m'apporte culture et maturité : comprendre les autres cultures, c'est la vraie richesse. Le sport de haut niveau m'inspire par la discipline qu'il demande, répéter des milliers de fois le même geste et dépasser la norme.</p>
                 </article>
             </div>
         </div>
@@ -169,10 +169,10 @@
                 <div role="tabpanel" id="panel-tech" aria-labelledby="tab-tech" class="tabpanel">
                     <h3 class="panel-heading">Technique</h3>
                     <ul class="skills">
-                        <li class="skill" data-level="2"><span>Linux</span></li>
+                        <li class="skill" data-level="1"><span>Linux</span></li>
                         <li class="skill" data-level="1"><span>Windows</span></li>
                         <li class="skill" data-level="1"><span>Réseau TCP/IP</span></li>
-                        <li class="skill" data-level="1"><span>Python</span></li>
+                        <li class="skill" data-level="2"><span>Python</span></li>
                         <li class="skill" data-level="1"><span>C++</span></li>
                         <li class="skill" data-level="2"><span>HTML / CSS / JS</span></li>
                         <li class="skill" data-level="1"><span>PHP / MySQL</span></li>
@@ -234,6 +234,48 @@
             <div class="grid-3" id="projects">
                 <!-- NOUVEAU PROJET : ne pas supprimer ce repère (utilisé par tools/nouveau-projet.sh) -->
                 <article class="card project" data-type="cours">
+                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
+                    <h3 class="card-title">Reverse Engineering capteur Wi-Fi</h3>
+                    <p>Rétro-ingénierie matérielle d'un détecteur d'ouverture basé sur ESP8266. Analyse de la gestion d'énergie, interception du trafic réseau (MQTT/TLS) et audit des vulnérabilités physiques via l'exploitation du port UART.</p>
+                    <ul class="tags"><li>Reverse Engineering</li><li>IoT</li><li>ESP8266</li><li>Wireshark</li></ul>
+                </article>
+
+                <article class="card project" data-type="cours">
+                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
+                    <h3 class="card-title">Reverse Engineering d'un objet IoT</h3>
+                    <p>Rétro-ingénierie matérielle et logicielle d'un système RFID (module MFRC522 / Arduino. Analyse des protocoles de communication, désobfuscation du code source et identification des vulnérabilités de conception (UID exposé, spoofing)</p>
+                    <ul class="tags"><li>Reverse Engineering</li><li>IoT</li><li>RFID</li><li>Arduino</li></ul>
+                </article>
+
+                <article class="card project" data-type="cours">
+                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
+                    <h3 class="card-title">Maîtrise de l'information (OSINT)</h3>
+                    <p>Pratique du cycle du renseignement dans un cadre légal strict. Élaboration de plans de recherche OSINT (cas Groupe Casino) et rédaction de synthèses stratégiques pour évaluer la fiabilité des informations.</p>
+                    <ul class="tags"><li>OSINT</li><li>Due Diligence</li><li>Analyse de sources</li><li>CTI</li></ul>
+                </article>
+
+                <article class="card project" data-type="cours">
+                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
+                    <h3 class="card-title">Techniques de base de pentesting</h3>
+                    <p>Apprentissage de la méthodologie globale d'un test d'intrusion. Maîtrise des phases d'énumération (Nmap, Shodan, Burp Suite), d'exploitation de vulnérabilités Web (SQLi, XSS, LFI) et des concepts d'ingénierie sociale. Accompagné d'une intrusion sur une machine préparer par l'école</p>
+                    <ul class="tags"><li>Pentesting</li><li>Vulnérabilités Web</li><li>SQLi</li><li>Burp Suite</li></ul>
+                </article>
+
+                <article class="card project" data-type="cours">
+                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
+                    <h3 class="card-title">Cybersécurité industrielle (OT / IoT)</h3>
+                    <p>Introduction à la sécurité des systèmes industriels. Analyse d'incidents majeurs (étude du ransomware de Norsk Hydro) et apprentissage des stratégies de protection des infrastructures critiques via la défense en profondeur.</p>
+                    <ul class="tags"><li>OT / IoT</li><li>Défense en profondeur</li><li>Analyse de risques</li><li>ICS</li></ul>
+                </article>
+
+                <article class="card project" data-type="cours">
+                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
+                    <h3 class="card-title">Introduction au cyberespace</h3>
+                    <p>Découverte du cyberespace, de ses acteurs et des enjeux géopolitiques mondiaux. Analyse des menaces complexes (APT) et initiation aux concepts de cyberdéfense, de résilience et de gestion des risques.</p>
+                    <ul class="tags"><li>Cybersécurité</li><li>Géopolitique</li><li>Gestion des risques</li><li>APT</li></ul>
+                </article>
+
+                <article class="card project" data-type="cours">
                     <div class="card-meta"><span class="badge">Cours</span><span>2025</span></div>
                     <h3 class="card-title">Sécurisation réseau, Proxy et SIEM</h3>
                     <p>Déploiement d'un réseau local filtré par un pare-feu, intégrant un proxy Squid chargé de gérer et rediriger les requêtes des clients vers le WAN. Mise en place d'un domaine Active Directory et d'une solution SIEM (Wazuh) pour la gestion et la supervision centralisée.</p>
@@ -278,7 +320,7 @@
 
                 <article class="card project" data-type="prod">
                     <div class="card-meta"><span class="badge badge-prod">En prod</span><span>2026</span></div>
-                    <h3 class="card-title">Automatisations de procédures — NAGA</h3>
+                    <h3 class="card-title">Automatisations de procédures chez NAGA</h3>
                     <p>Pendant mon stage, mise en place d'automatisations utilisées au quotidien, par exemple l'extraction de tous les messages Discord d'un jeu vers une base de données Notion. Des tâches d'une demi-journée ramenées à une heure maximum.</p>
                     <ul class="tags"><li>Automatisation</li><li>Agents IA</li><li>MCP</li><li>Notion</li></ul>
                 </article>
