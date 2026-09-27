@@ -444,9 +444,9 @@ html:not(.js) #email-reveal { display: none; }
 .project .tags + .card-link { margin-top: 0; }
 
 /* ── Projets : barre de recherche ─────────────────────────────────── */
-.project-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem 1rem; margin-bottom: .5rem; }
+.project-tools { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-start; gap: .75rem 1rem; margin-bottom: .5rem; }
 .project-tools .filters { margin-bottom: 0; }
-.search { position: relative; flex: 1 1 260px; max-width: 360px; }
+.search { position: relative; flex: 0 1 320px; min-width: 220px; }
 .search-icon { position: absolute; left: .75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); pointer-events: none; }
 .search input {
     width: 100%; padding: .55rem .9rem .55rem 2.2rem; border-radius: 999px;
@@ -461,4 +461,4 @@ html:not(.js) .search { display: none; }
 .project .tags li[role="button"] { cursor: pointer; transition: border-color .15s, color .15s; }
 .project .tags li[role="button"]:hover { border-color: var(--accent); color: var(--text); }
 .project .tags li.is-active { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
-@media (max-width: 640px) { .search { max-width: none; } }
+@media (max-width: 640px) { .search { flex: 1 1 100%; } }
