@@ -42,11 +42,12 @@ window.MISSIONS = {
                 text: ['Les ordinateurs ne comprennent pas « monjeu.fr ». Ils ont besoin d\'une adresse en chiffres, comme un numéro de téléphone : l\'**adresse IP**.',
                        'Qui donne cette adresse à ton téléphone ?'],
                 options: [
-                    { t: '📖 Le DNS, l\'annuaire d\'Internet', ok: true, why: 'Oui ! Le DNS traduit « monjeu.fr » en adresse IP, comme un annuaire traduit un nom en numéro.' },
+                    { t: '📖 Le DNS', ok: true, why: 'Oui ! Le DNS traduit « monjeu.fr » en adresse IP, comme un annuaire traduit un nom en numéro.' },
                     { t: '🗺️ Une application de cartes', why: 'Pas tout à fait : les cartes trouvent des lieux, pas des sites. Cherche plutôt un « annuaire ».' },
                     { t: '🎲 Le téléphone devine au hasard', why: 'Heureusement non ! Il demande à un service spécialisé, comme un annuaire.' }
                 ],
-                word: { term: 'DNS', def: 'L\'annuaire d\'Internet : il transforme un nom de site en adresse IP.' }
+                hint: 'Pense à un annuaire : on y cherche un nom, et on obtient un numéro.',
+                word: { term: 'DNS (Domain Name System)', def: 'Quand tu tapes « monjeu.fr », ton téléphone demande au DNS l\'adresse IP du site, puis il peut s\'y connecter.' }
             },
             {
                 type: 'choice', title: 'Espionne le Wi-Fi du café',

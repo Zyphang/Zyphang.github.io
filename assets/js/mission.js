@@ -387,8 +387,10 @@
         nextBtn.addEventListener('click', function () { stepIdx++; renderStep(); });
         nav.appendChild(nextBtn);
 
+        var word = null;
         function solved() {
             nextBtn.disabled = false;
+            if (word) word.hidden = false;   // le mot à retenir n'apparaît qu'une fois la bonne réponse trouvée
             if (hintBtn) hintBtn.hidden = true;
             nextBtn.focus({ preventScroll: true });
         }
@@ -406,7 +408,8 @@
         card.appendChild(fb);
 
         if (step.word) {
-            var word = el('aside', 'word');
+            word = el('aside', 'word');
+            word.hidden = step.type !== 'info';
             word.appendChild(el('p', 'word-label', '📘 Le mot à retenir'));
             var def = el('p');
             def.appendChild(el('strong', null, step.word.term + ' : '));
