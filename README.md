@@ -37,7 +37,7 @@ Pas de fichier de données ni de rendu JavaScript : le site s'affiche même sans
 
 - **Textes à compléter** : tout ce qui est en orange sur le site (`class="todo"` / `todo-block` dans le code). Remplace le texte et retire la classe.
 - **Compétence** : copie un `<li class="skill" data-level="1">`. Niveaux : 1 notions · 2 en progression · 3 opérationnel · 4 confirmé.
-- **Projet** : copie un `<article class="card project" data-type="…">`. `data-type` = `cours`, `perso` ou `prod` (utilisé par le filtre).
+- **Projet** : le plus simple, `bash tools/nouveau-projet.sh` (il pose les questions et ajoute la carte en tête de la section). À la main : copie un `<article class="card project" data-type="…">` ; `data-type` = `cours`, `perso` ou `prod` (utilisé par le filtre). Ne supprime pas le repère `NOUVEAU PROJET` dans `index.html`.
 - **Certification** : `cert cert-done` (obtenue) ou `cert cert-planned` (prévue).
 - **Expérience** : copie un `<li class="tl-item" data-type="…">`. `data-type` = `stage`, `ctf`, `clusir` ou `avant`.
 - **CV** : dépose `assets/docs/CV.pdf` et décommente le bouton dans la section Profil (pense à retirer les métadonnées du PDF : `exiftool -all= CV.pdf`).
