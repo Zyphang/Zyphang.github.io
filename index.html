@@ -1,525 +1,1410 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <meta charset="UTF-8">
-    <!--
-        SÉCURITÉ — Content Security Policy (en <meta>, car GitHub Pages ne permet
-        pas d'envoyer d'en-têtes HTTP personnalisés). Elle DOIT rester la première
-        balise après le charset, avant toute ressource.
-        - default-src 'none'           : tout est interdit, on ouvre au cas par cas
-        - script/style/img/font 'self' : uniquement des fichiers de ce dépôt
-                                         (aucun CDN, aucune police Google, aucun traceur)
-        - pas de 'unsafe-inline'       : ni <script> inline, ni attribut style="…",
-                                         ni onclick="…" ne s'exécutent
-        - connect-src 'none'           : le site ne fait AUCUNE requête réseau en JS
-        - form-action 'none'           : aucun formulaire ne peut envoyer de données
-        - require-trusted-types-for    : bloque innerHTML/eval & co (anti DOM-XSS)
-        Limites connues en <meta> : frame-ancestors et report-uri sont ignorés
-        → anti-clickjacking géré en JS dans assets/js/guard.js.
-    -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types 'none'">
-    <meta name="referrer" content="no-referrer">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cellule de crise cyber — BioPanier</title>
+<style>
+  /* ============= DESIGN TOKENS ============= */
+  :root {
+    --bg:        #07090f;
+    --surface:   #0f1422;
+    --card:      #161e33;
+    --border:    #2a3654;
+    --text:      #e4e9f5;
+    --muted:     #8b95ad;
+    --red:       #ef4444;
+    --amber:     #f59e0b;
+    --cyan:      #06b6d4;
+    --green:     #10b981;
+    --blue:      #3b82f6;
+    --mail-bg:   #1c2438;
+    --mail-fg:   #d6deed;
+    --shadow-lg: 0 25px 50px -12px rgba(0,0,0,0.5);
+  }
 
-    <title>Damien Dathueyt — Cyberfolio</title>
-    <meta name="description" content="Cyberfolio de Damien Dathueyt (Zyphang) : étudiant en cybersécurité à Guardia Cybersecurity School, en reconversion, orienté GRC et conseil cyber. Lyon.">
-    <meta name="author" content="Damien Dathueyt">
-    <link rel="canonical" href="https://zyphang.github.io/">
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Damien Dathueyt — Cyberfolio">
-    <meta property="og:description" content="Étudiant en cybersécurité à Guardia, en reconversion, orienté GRC et conseil cyber. Lyon.">
-    <meta property="og:url" content="https://zyphang.github.io/">
-    <meta property="og:locale" content="fr_FR">
-    <!-- <meta property="og:image" content="https://zyphang.github.io/assets/img/og-image.png"> -->
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    overflow: hidden;
+    height: 100%;
+    user-select: none;
+    -webkit-user-select: none;
+  }
 
-    <meta name="color-scheme" content="light dark">
-    <meta name="theme-color" content="#f7f7f5" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#0d1117" media="(prefers-color-scheme: dark)">
-    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+  /* Subtle animated grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(60, 80, 130, 0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(60, 80, 130, 0.08) 1px, transparent 1px);
+    background-size: 50px 50px;
+    pointer-events: none;
+    z-index: 0;
+  }
 
-    <!-- guard.js : chargé en premier, SANS defer (anti-framing + thème avant affichage) -->
-    <script src="assets/js/guard.js"></script>
-    <link rel="stylesheet" href="assets/css/styles.css">
-    <script src="assets/js/main.js" defer></script>
+  /* ============= SCREENS ============= */
+  .screen {
+    position: fixed;
+    inset: 0;
+    display: none;
+    z-index: 1;
+  }
+  .screen.active { display: flex; }
+
+  /* ============= WELCOME SCREEN ============= */
+  #welcome {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4vh 4vw;
+    text-align: center;
+    overflow-y: auto;
+  }
+  #welcome .badge {
+    color: var(--cyan);
+    font-size: clamp(0.8rem, 1.5vw, 1rem);
+    letter-spacing: 0.4em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  #welcome h1 {
+    font-size: clamp(2.5rem, 7vw, 5.5rem);
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #ffffff 0%, #6b7fb8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.05;
+  }
+  #welcome h2 {
+    font-size: clamp(1rem, 2.2vw, 1.5rem);
+    color: var(--muted);
+    font-weight: 400;
+    margin-bottom: 3rem;
+  }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    max-width: 1100px;
+    margin: 0 auto 2.5rem auto;
+    width: 100%;
+  }
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    text-align: left;
+  }
+  .info-card .ico { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .info-card h3 { font-size: 0.95rem; margin-bottom: 0.35rem; color: var(--text); }
+  .info-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.4; }
+
+  .start-panel {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    max-width: 560px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+  }
+  .start-panel label {
+    display: block;
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
+  }
+  .start-panel .row {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .start-panel input[type="time"] {
+    flex: 1;
+    background: var(--surface);
+    color: var(--text);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    font-family: inherit;
+  }
+  .start-panel input[type="time"]:focus {
+    outline: none;
+    border-color: var(--cyan);
+  }
+  .checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--muted);
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    text-align: left;
+  }
+  .checkbox-row input { cursor: pointer; }
+
+  button.primary {
+    background: linear-gradient(135deg, var(--green) 0%, #059669 100%);
+    color: white;
+    border: none;
+    padding: 1.1rem 2.5rem;
+    font-size: 1.2rem;
+    font-weight: 700;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    width: 100%;
+  }
+  button.primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(16,185,129,0.3); }
+  button.primary:active { transform: translateY(0); }
+
+  button.secondary {
+    background: transparent;
+    color: var(--cyan);
+    border: 1px solid var(--cyan);
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  button.secondary:hover { background: rgba(6, 182, 212, 0.1); }
+
+  /* ============= COUNTDOWN-TO-START ============= */
+  #countdown {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  #countdown .label {
+    color: var(--cyan);
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    letter-spacing: 0.3em;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+  #countdown .timer-big {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: clamp(6rem, 22vw, 18rem);
+    font-weight: 900;
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+  #countdown .sub {
+    color: var(--muted);
+    font-size: clamp(0.9rem, 1.6vw, 1.2rem);
+    max-width: 500px;
+    line-height: 1.5;
+  }
+  #countdown button.cancel {
+    margin-top: 2rem;
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ============= MAIN SCREEN (running atelier) ============= */
+  #main {
+    flex-direction: column;
+    padding: 0;
+  }
+  .phase-bar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .phase-bar .left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .phase-bar .pulse {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+    50% { opacity: 0.7; box-shadow: 0 0 0 8px rgba(16,185,129,0); }
+  }
+  .phase-bar .title {
+    font-size: clamp(1rem, 1.8vw, 1.4rem);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+  }
+  .phase-bar .subtitle {
+    color: var(--muted);
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
+    margin-top: 2px;
+  }
+  .phase-bar .controls {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .ctrl-btn {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.85rem;
+    font-size: 0.85rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .ctrl-btn:hover { color: var(--text); border-color: var(--text); }
+
+  .main-stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    position: relative;
+  }
+
+  #mainTimer {
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: clamp(8rem, 28vw, 24rem);
+    font-weight: 900;
+    line-height: 0.9;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    text-shadow: 0 0 80px rgba(99, 134, 224, 0.15);
+    transition: color 0.3s;
+  }
+  #mainTimer.warn { color: var(--amber); }
+  #mainTimer.alert { color: var(--red); animation: shake 0.4s; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .timer-label {
+    margin-top: 1rem;
+    color: var(--muted);
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+  }
+
+  .next-event {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .next-event .cnt {
+    color: var(--cyan);
+    font-family: ui-monospace, monospace;
+    font-weight: 600;
+  }
+
+  /* ============= SPRINT MODE ============= */
+  .main-stage.sprint #mainTimer {
+    font-size: clamp(3rem, 10vw, 8rem);
+    color: var(--muted);
+  }
+  .sprint-banner {
+    display: none;
+    background: linear-gradient(135deg, var(--amber) 0%, #d97706 100%);
+    color: #1a1a1a;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-weight: 800;
+    font-size: clamp(1rem, 2vw, 1.5rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .main-stage.sprint .sprint-banner { display: block; }
+  #sprintTimer {
+    display: none;
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    font-size: clamp(10rem, 32vw, 28rem);
+    font-weight: 900;
+    line-height: 0.9;
+    color: var(--amber);
+    text-shadow: 0 0 100px rgba(245, 158, 11, 0.3);
+  }
+  .main-stage.sprint #sprintTimer { display: block; }
+  #sprintTimer.critical { color: var(--red); animation: shake 0.4s infinite; }
+  .sprint-task {
+    display: none;
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--text);
+    font-size: clamp(0.95rem, 1.6vw, 1.2rem);
+    max-width: 900px;
+  }
+  .main-stage.sprint .sprint-task { display: block; }
+  .sprint-task strong { color: var(--amber); }
+
+  /* ============= INJECT OVERLAY ============= */
+  #injectOverlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.92);
+    z-index: 100;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3vh 4vw;
+    overflow-y: auto;
+    backdrop-filter: blur(8px);
+  }
+  #injectOverlay.active {
+    display: flex;
+    animation: fadeIn 0.4s ease-out;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  .inject-wrap {
+    max-width: 900px;
+    width: 100%;
+    animation: slideUp 0.5s ease-out;
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(40px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .inject-banner {
+    background: var(--red);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: 12px 12px 0 0;
+    font-weight: 800;
+    font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .inject-banner .blink {
+    width: 12px; height: 12px;
+    background: white;
+    border-radius: 50%;
+    animation: blink 0.8s ease-in-out infinite;
+  }
+  @keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+  }
+
+  .mail {
+    background: var(--mail-bg);
+    color: var(--mail-fg);
+    border: 1px solid var(--border);
+    border-top: none;
+    padding: 1.75rem 2rem;
+    font-size: clamp(0.95rem, 1.3vw, 1.05rem);
+    line-height: 1.55;
+  }
+  .mail-header {
+    border-bottom: 1px solid #3a4763;
+    padding-bottom: 0.75rem;
+    margin-bottom: 1rem;
+    font-size: 0.9em;
+  }
+  .mail-header .row { margin-bottom: 0.25rem; }
+  .mail-header .label { color: var(--muted); display: inline-block; min-width: 75px; font-weight: 600; }
+  .mail-header .subject-red { color: var(--red); font-weight: 700; }
+  .mail p { margin: 0.6em 0; }
+  .mail ul { margin: 0.5em 0 0.5em 1.5em; }
+  .mail li { margin: 0.3em 0; }
+  .mail strong { color: white; }
+  .mail .quote {
+    border-left: 4px solid var(--red);
+    padding: 0.75em 1em;
+    background: rgba(239, 68, 68, 0.05);
+    font-style: italic;
+    margin: 0.75em 0;
+    color: #c8d0e4;
+  }
+  .mail .signature { font-style: italic; color: var(--muted); margin-top: 1em; }
+  .mail .alert-amount { color: var(--red); font-weight: 700; }
+
+  .inject-close {
+    margin-top: 1rem;
+    width: 100%;
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: inherit;
+    letter-spacing: 0.05em;
+  }
+  .inject-close:hover { background: var(--border); }
+
+  /* Cascade for inject 3 */
+  .cascade-msg {
+    background: var(--mail-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1rem;
+    animation: slideUp 0.4s ease-out;
+  }
+  .cascade-msg .ico-title {
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+    font-size: 1.05em;
+  }
+  .cascade-msg .meta {
+    color: var(--muted);
+    font-size: 0.85em;
+    margin-bottom: 0.75rem;
+  }
+  .cascade-msg .body { color: var(--mail-fg); line-height: 1.5; }
+  .cascade-msg .red { color: var(--red); font-weight: 700; }
+  .cascade-msg .twitter-handle { color: var(--cyan); font-weight: 700; }
+  .cascade-msg .stats { color: var(--muted); font-size: 0.9em; margin-top: 0.5em; }
+
+  /* ============= POPUP (stress signal) ============= */
+  .popup-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 380px;
+    max-width: calc(100vw - 40px);
+    z-index: 90;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .popup {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--amber);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    box-shadow: var(--shadow-lg);
+    animation: slideInRight 0.4s ease-out;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .popup:hover { transform: translateX(-4px); }
+  .popup.urgent { border-left-color: var(--red); }
+  .popup.info { border-left-color: var(--cyan); }
+  @keyframes slideInRight {
+    from { opacity: 0; transform: translateX(60px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .popup.dismissing { animation: slideOutRight 0.3s ease-in forwards; }
+  @keyframes slideOutRight {
+    to { opacity: 0; transform: translateX(60px); }
+  }
+  .popup .ico-line {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+  .popup .ico { font-size: 1.2rem; }
+  .popup .title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text);
+    flex: 1;
+  }
+  .popup .close-x {
+    color: var(--muted);
+    cursor: pointer;
+    padding: 0 4px;
+    font-size: 1.1rem;
+  }
+  .popup .body {
+    color: var(--mail-fg);
+    font-size: 0.9rem;
+    line-height: 1.45;
+  }
+  .popup .body strong { color: var(--text); }
+
+  /* ============= DEBRIEF SCREEN ============= */
+  #debrief, #endscreen {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 4vh 4vw;
+    text-align: center;
+    overflow-y: auto;
+  }
+  #debrief h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    margin-bottom: 0.5rem;
+    color: var(--cyan);
+  }
+  #debrief .subtitle {
+    color: var(--muted);
+    font-size: clamp(1rem, 1.8vw, 1.3rem);
+    margin-bottom: 2.5rem;
+  }
+  .reflex-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    width: 100%;
+    margin-bottom: 2rem;
+  }
+  .reflex {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: left;
+  }
+  .reflex .num {
+    font-size: 3rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+  .reflex.tracer .num { color: var(--cyan); }
+  .reflex.trancher .num { color: var(--amber); }
+  .reflex.parler .num { color: var(--red); }
+  .reflex h3 {
+    font-size: 1.3rem;
+    margin-bottom: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .reflex p {
+    color: var(--mail-fg);
+    line-height: 1.55;
+    font-size: 0.95rem;
+  }
+  .quote-final {
+    background: var(--surface);
+    border-left: 4px solid var(--red);
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    max-width: 900px;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    font-size: clamp(1rem, 1.8vw, 1.3rem);
+    text-align: left;
+  }
+
+  #endscreen h1 {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  #endscreen p {
+    color: var(--muted);
+    font-size: clamp(1rem, 2vw, 1.4rem);
+    max-width: 700px;
+    line-height: 1.5;
+  }
+
+  /* ============= DEV CONTROLS ============= */
+  .dev-controls {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 1000;
+    display: none;
+    background: rgba(0,0,0,0.7);
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+  }
+  .dev-controls.visible { display: flex; gap: 6px; flex-wrap: wrap; max-width: 400px; }
+  .dev-controls button {
+    background: var(--card);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width: 720px) {
+    .phase-bar { padding: 0.75rem 1rem; }
+    .popup-container { right: 10px; width: calc(100vw - 20px); top: 70px; }
+    .info-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
 </head>
-
 <body>
-<a href="#main" class="skip-link">Aller au contenu</a>
 
-<header class="site-header">
-    <nav class="nav container" aria-label="Navigation principale">
-        <a href="#profil" class="nav-logo">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 2 3 6.5v6c0 5 3.8 8.9 9 10 5.2-1.1 9-5 9-10v-6L12 2z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
-            <span>Damien Dathueyt</span>
-        </a>
+<!-- ============= WELCOME SCREEN ============= -->
+<div id="welcome" class="screen active">
+  <div class="badge">Atelier immersif</div>
+  <h1>Cellule de crise cyber</h1>
+  <h2>BioPanier — Scénario express 60 minutes</h2>
 
-        <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="nav-menu">
-            <span class="sr-only">Menu</span><span class="bar"></span><span class="bar"></span>
-        </button>
-
-        <ul class="nav-menu" id="nav-menu">
-            <li><a href="#profil">Profil</a></li>
-            <li><a href="#competences">Compétences</a></li>
-            <li><a href="#projets">Projets</a></li>
-            <li><a href="#certifications">Certifications</a></li>
-            <li><a href="#experience">Expérience</a></li>
-            <li><a href="#atelier">Atelier</a></li>
-            <li><a href="#contact">Contact</a></li>
-            <li>
-                <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Changer de thème (clair / sombre)">
-                    <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
-                    <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
-                </button>
-            </li>
-        </ul>
-    </nav>
-</header>
-
-<main id="main">
-
-    <!-- ═══════════════════════════ 01 · PROFIL ═══════════════════════════ -->
-    <section id="profil" class="section hero" aria-labelledby="hero-title">
-        <div class="container">
-            <p class="status"><span class="status-dot" aria-hidden="true"></span>Recherche un stage de fin de B2 · <span class="todo">[À COMPLÉTER : période]</span></p>
-
-            <h1 id="hero-title" class="hero-title">Damien Dathueyt</h1>
-            <p class="hero-role">Étudiant en cybersécurité · <span class="muted">Guardia Cybersecurity School, Lyon</span></p>
-            <p class="hero-lead">
-                De la salle d'un palace à la cybersécurité : même exigence, nouveau terrain.
-                Je m'oriente vers la <strong>GRC</strong> et le <strong>conseil cyber</strong>.
-            </p>
-
-            <div class="hero-cta">
-                <a class="btn btn-primary" href="https://www.linkedin.com/in/damien-dathueyt" target="_blank" rel="noopener noreferrer">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
-                    Voir mon LinkedIn
-                </a>
-                <a class="btn btn-ghost" href="#contact">Me contacter</a>
-                <!-- CV : dépose assets/docs/CV.pdf puis décommente la ligne suivante -->
-                <!-- <a class="btn btn-ghost" href="assets/docs/CV.pdf" download>Télécharger mon CV</a> -->
-            </div>
-
-            <div class="profile-grid">
-                <article class="card">
-                    <h2 class="card-title">Qui je suis</h2>
-                    <p>
-                        Après plusieurs années dans la <strong>restauration haut de gamme et le bar en palace</strong>,
-                        j'ai choisi de me reconvertir dans la cybersécurité. Étudiant à <strong>Guardia Cybersecurity School</strong>
-                        et membre du <strong>CLUSIR Auvergne-Rhône-Alpes</strong>, j'apporte à ce métier ce que le service
-                        d'excellence m'a appris : rigueur, sang-froid sous pression et sens du client.
-                    </p>
-                    <p class="todo-block">[À COMPLÉTER : 1–2 phrases sur ce que tu recherches précisément et ce qui te distingue.]</p>
-                </article>
-
-                <article class="card">
-                    <h2 class="card-title">Ma reconversion</h2>
-                    <ol class="path">
-                        <li><span class="path-step">Avant</span>Restauration haut de gamme &amp; bar en palace</li>
-                        <li><span class="path-step">Déclic</span><span class="todo">[À COMPLÉTER : ce qui t'a amené à la cyber]</span></li>
-                        <li><span class="path-step">Aujourd'hui</span>Bachelor cybersécurité — Guardia, Lyon</li>
-                        <li><span class="path-step">Objectif</span>GRC &amp; conseil en cybersécurité</li>
-                    </ol>
-                </article>
-
-                <article class="card">
-                    <h2 class="card-title">Passions</h2>
-                    <ul class="tags">
-                        <li>CTF &amp; challenges Root-Me</li>
-                        <li>Veille cyber</li>
-                        <li class="todo">[Passion]</li>
-                        <li class="todo">[Passion]</li>
-                    </ul>
-                    <p class="todo-block">[À COMPLÉTER : une phrase sur ce que ces passions t'apportent.]</p>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════ 02 · COMPÉTENCES ═══════════════════════════
-         Niveaux : data-level="1" notions · "2" en progression · "3" opérationnel · "4" confirmé
-         Pour ajouter une compétence : copie un <li class="skill">…</li>.
-    -->
-    <section id="competences" class="section section-alt" aria-labelledby="skills-title">
-        <div class="container">
-            <p class="eyebrow">02 · Compétences</p>
-            <h2 id="skills-title" class="section-title">Compétences</h2>
-            <p class="section-intro">Technique en construction, et des compétences humaines forgées sur le terrain pendant ma première carrière.</p>
-
-            <div class="tabs" data-tabs>
-                <div class="tablist" role="tablist" aria-label="Catégories de compétences">
-                    <button role="tab" type="button" id="tab-cyber" aria-controls="panel-cyber" aria-selected="true">Cyber &amp; GRC</button>
-                    <button role="tab" type="button" id="tab-tech" aria-controls="panel-tech" aria-selected="false" tabindex="-1">Technique</button>
-                    <button role="tab" type="button" id="tab-mgmt" aria-controls="panel-mgmt" aria-selected="false" tabindex="-1">Management</button>
-                    <button role="tab" type="button" id="tab-soft" aria-controls="panel-soft" aria-selected="false" tabindex="-1">Soft skills</button>
-                </div>
-
-                <div role="tabpanel" id="panel-cyber" aria-labelledby="tab-cyber" class="tabpanel">
-                    <h3 class="panel-heading">Cyber &amp; GRC</h3>
-                    <ul class="skills">
-                        <li class="skill" data-level="2"><span>Gestion de crise cyber</span></li>
-                        <li class="skill" data-level="1"><span>ISO 27001</span></li>
-                        <li class="skill" data-level="1"><span>EBIOS RM</span></li>
-                        <li class="skill" data-level="1"><span>Cryptographie</span></li>
-                        <li class="skill" data-level="1"><span>DevSecOps</span></li>
-                        <li class="skill" data-level="2"><span>Hygiène &amp; sensibilisation</span></li>
-                    </ul>
-                </div>
-
-                <div role="tabpanel" id="panel-tech" aria-labelledby="tab-tech" class="tabpanel">
-                    <h3 class="panel-heading">Technique</h3>
-                    <ul class="skills">
-                        <li class="skill" data-level="2"><span>Linux</span></li>
-                        <li class="skill" data-level="1"><span>Windows</span></li>
-                        <li class="skill" data-level="1"><span>Réseau TCP/IP</span></li>
-                        <li class="skill" data-level="1"><span>Python</span></li>
-                        <li class="skill" data-level="1"><span>C++</span></li>
-                        <li class="skill" data-level="2"><span>HTML / CSS / JS</span></li>
-                        <li class="skill" data-level="1"><span>PHP / MySQL</span></li>
-                        <li class="skill" data-level="1"><span>Burp Suite</span></li>
-                        <li class="skill" data-level="2"><span>Git / GitHub</span></li>
-                    </ul>
-                </div>
-
-                <div role="tabpanel" id="panel-mgmt" aria-labelledby="tab-mgmt" class="tabpanel">
-                    <h3 class="panel-heading">Management</h3>
-                    <p class="panel-note">Acquis en restauration haut de gamme. <span class="todo">[Ajuste les niveaux]</span></p>
-                    <ul class="skills">
-                        <li class="skill" data-level="3"><span>Encadrement d'équipe</span></li>
-                        <li class="skill" data-level="3"><span>Organisation &amp; planning de service</span></li>
-                        <li class="skill" data-level="3"><span>Formation des nouveaux arrivants</span></li>
-                        <li class="skill" data-level="3"><span>Priorisation dans l'urgence</span></li>
-                        <li class="skill" data-level="4"><span>Relation client exigeante</span></li>
-                        <li class="skill" data-level="2"><span>Gestion des stocks &amp; coûts</span></li>
-                    </ul>
-                </div>
-
-                <div role="tabpanel" id="panel-soft" aria-labelledby="tab-soft" class="tabpanel">
-                    <h3 class="panel-heading">Soft skills</h3>
-                    <ul class="skills">
-                        <li class="skill" data-level="4"><span>Gestion du stress</span></li>
-                        <li class="skill" data-level="4"><span>Sang-froid en situation de crise</span></li>
-                        <li class="skill" data-level="3"><span>Communication &amp; diplomatie</span></li>
-                        <li class="skill" data-level="4"><span>Rigueur &amp; sens du détail</span></li>
-                        <li class="skill" data-level="3"><span>Adaptabilité</span></li>
-                        <li class="skill" data-level="3"><span>Travail en équipe</span></li>
-                    </ul>
-                </div>
-            </div>
-
-            <ul class="legend" aria-label="Légende des niveaux">
-                <li class="skill" data-level="1"><span>Notions</span></li>
-                <li class="skill" data-level="2"><span>En progression</span></li>
-                <li class="skill" data-level="3"><span>Opérationnel</span></li>
-                <li class="skill" data-level="4"><span>Confirmé</span></li>
-            </ul>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════ 03 · PROJETS ═══════════════════════════
-         data-type : "cours" | "perso" | "prod"   (sert au filtre)
-    -->
-    <section id="projets" class="section" aria-labelledby="projects-title">
-        <div class="container">
-            <p class="eyebrow">03 · Projets</p>
-            <h2 id="projects-title" class="section-title">Projets</h2>
-            <p class="section-intro">Projets de cours, projets personnels et ce que j'ai déployé en production.</p>
-
-            <div class="filters" data-filter="projects" role="group" aria-label="Filtrer les projets">
-                <button type="button" data-value="all" aria-pressed="true">Tous</button>
-                <button type="button" data-value="cours" aria-pressed="false">Cours</button>
-                <button type="button" data-value="perso" aria-pressed="false">Perso</button>
-                <button type="button" data-value="prod" aria-pressed="false">En prod</button>
-            </div>
-
-            <div class="grid-3" id="projects">
-                <article class="card project" data-type="prod">
-                    <div class="card-meta"><span class="badge badge-prod">En prod</span><span>2026</span></div>
-                    <h3 class="card-title">Ce cyberfolio</h3>
-                    <p>Site statique durci : CSP stricte avec Trusted Types, zéro dépendance ni traceur, anti-clickjacking, email anti-scraping, CI de sécurité (détection de secrets, contrôle de la CSP).</p>
-                    <ul class="tags"><li>Sécurité web</li><li>CSP</li><li>CI/CD</li></ul>
-                    <a class="card-link" href="https://github.com/Zyphang/Zyphang.github.io" target="_blank" rel="noopener noreferrer">Code source →</a>
-                </article>
-
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
-                    <h3 class="card-title">Atelier gestion de crise cyber</h3>
-                    <p>Simulation d'une compromission de messagerie dans une PME fictive : déclenchement de la cellule de crise, communication interne et externe, coordination technique, juridique et direction.</p>
-                    <ul class="tags"><li>Gestion de crise</li><li>Communication</li><li>GRC</li></ul>
-                </article>
-
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2026</span></div>
-                    <h3 class="card-title">Projet cryptographie</h3>
-                    <p>Étude des algorithmes symétriques et asymétriques (AES, RSA) et implémentation pédagogique en Python pour un système de messagerie.</p>
-                    <ul class="tags"><li>Cryptographie</li><li>Python</li><li>AES · RSA</li></ul>
-                </article>
-
-                <article class="card project" data-type="cours">
-                    <div class="card-meta"><span class="badge">Cours</span><span>2025</span></div>
-                    <h3 class="card-title">Initiation DevSecOps</h3>
-                    <p>Intégration d'outils de sécurité (SAST, analyse des dépendances) dans une pipeline CI/CD GitHub Actions sur un projet web simple.</p>
-                    <ul class="tags"><li>DevSecOps</li><li>CI/CD</li><li>SAST</li></ul>
-                </article>
-
-                <article class="card project" data-type="perso">
-                    <div class="card-meta"><span class="badge badge-perso">Perso</span><span class="todo">[Année]</span></div>
-                    <h3 class="card-title todo">[À COMPLÉTER : projet perso]</h3>
-                    <p class="todo-block">Homelab, script, outil, writeup de CTF… Décris le problème, ce que tu as fait, et ce que tu as appris.</p>
-                    <ul class="tags"><li class="todo">[tag]</li></ul>
-                </article>
-
-                <article class="card project" data-type="prod">
-                    <div class="card-meta"><span class="badge badge-prod">En prod</span><span class="todo">[Année]</span></div>
-                    <h3 class="card-title todo">[À COMPLÉTER : réalisation en production]</h3>
-                    <p class="todo-block">Ce que tu as mis en production (stage, association, client) : contexte, ton rôle, résultat mesurable.</p>
-                    <ul class="tags"><li class="todo">[tag]</li></ul>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════ 04 · CERTIFICATIONS ═══════════════════════════ -->
-    <section id="certifications" class="section section-alt" aria-labelledby="certs-title">
-        <div class="container">
-            <p class="eyebrow">04 · Certifications</p>
-            <h2 id="certs-title" class="section-title">Certifications</h2>
-            <p class="section-intro">Un parcours de certification qui commence. La feuille de route s'étoffera au fil de la formation.</p>
-
-            <div class="certs">
-                <article class="cert cert-done">
-                    <svg class="cert-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="m8.5 14-1.5 8 5-3 5 3-1.5-8"/></svg>
-                    <div>
-                        <h3 class="cert-title">MOOC SecNumacadémie</h3>
-                        <p class="cert-meta">ANSSI · Obtenu <span class="todo">[date]</span></p>
-                    </div>
-                    <span class="badge badge-ok">Obtenue</span>
-                </article>
-
-                <article class="cert cert-planned">
-                    <svg class="cert-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                    <div>
-                        <h3 class="cert-title">CompTIA Security+</h3>
-                        <p class="cert-meta">Objectif · <span class="todo">[échéance]</span></p>
-                    </div>
-                    <span class="badge">Prévue</span>
-                </article>
-
-                <article class="cert cert-planned">
-                    <svg class="cert-icon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
-                    <div>
-                        <h3 class="cert-title todo">[Prochaine certification]</h3>
-                        <p class="cert-meta">Objectif · <span class="todo">[échéance]</span></p>
-                    </div>
-                    <span class="badge">Prévue</span>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════ 05 · EXPÉRIENCE ═══════════════════════════
-         data-type : "stage" | "ctf" | "clusir" | "avant"
-    -->
-    <section id="experience" class="section" aria-labelledby="exp-title">
-        <div class="container">
-            <p class="eyebrow">05 · Expérience</p>
-            <h2 id="exp-title" class="section-title">Expérience</h2>
-            <p class="section-intro">Stages, compétitions et engagement associatif, puis la carrière qui m'a forgé.</p>
-
-            <div class="filters" data-filter="timeline" role="group" aria-label="Filtrer les expériences">
-                <button type="button" data-value="all" aria-pressed="true">Tout</button>
-                <button type="button" data-value="stage" aria-pressed="false">Stages</button>
-                <button type="button" data-value="ctf" aria-pressed="false">CTF</button>
-                <button type="button" data-value="clusir" aria-pressed="false">CLUSIR AuRA</button>
-                <button type="button" data-value="avant" aria-pressed="false">Avant la cyber</button>
-            </div>
-
-            <ol class="timeline" id="timeline">
-                <li class="tl-item" data-type="stage">
-                    <details class="tl-details">
-                        <summary>
-                            <div class="tl-head">
-                                <h3 class="tl-title todo">[Intitulé du stage] — [Entreprise]</h3>
-                                <span class="tl-period todo">[mois AAAA – mois AAAA]</span>
-                            </div>
-                            <span class="badge">Stage</span>
-                            <p><span class="todo">[Contexte du stage en une phrase.]</span></p>
-                            <span class="tl-more" aria-hidden="true">Voir le détail</span>
-                        </summary>
-                        <div class="tl-body">
-                            <h4 class="tl-body-title">Missions</h4>
-                            <ul class="tl-missions">
-                                <li class="todo">[Mission 1 : ce que tu as fait, avec quel outil]</li>
-                                <li class="todo">[Mission 2]</li>
-                                <li class="todo">[Mission 3]</li>
-                                <li class="todo">[Résultat concret ou chiffré]</li>
-                            </ul>
-                            <p class="tl-skills"><strong>Compétences mobilisées :</strong> <span class="todo">[ex. analyse de risques, rédaction de procédures, sensibilisation]</span></p>
-                        </div>
-                    </details>
-                </li>
-
-                <li class="tl-item" data-type="ctf">
-                    <details class="tl-details">
-                        <summary>
-                            <div class="tl-head">
-                                <h3 class="tl-title">CTF en équipe — Guardia Cybersecurity School</h3>
-                                <span class="tl-period todo">[date]</span>
-                            </div>
-                            <span class="badge">CTF</span>
-                            <p>Participation en équipe. <span class="todo">[Nom de l'événement, classement]</span></p>
-                            <span class="tl-more" aria-hidden="true">Voir le détail</span>
-                        </summary>
-                        <div class="tl-body">
-                            <h4 class="tl-body-title">Missions</h4>
-                            <ul class="tl-missions">
-                                <li class="todo">[Catégories résolues : web, crypto, forensic, OSINT…]</li>
-                                <li class="todo">[Ton rôle dans l'équipe]</li>
-                                <li class="todo">[Challenge dont tu es le plus fier et comment tu l'as résolu]</li>
-                            </ul>
-                            <p class="tl-skills"><strong>Compétences mobilisées :</strong> travail en équipe, gestion du temps sous pression, <span class="todo">[compétences techniques]</span></p>
-                        </div>
-                    </details>
-                </li>
-
-                <li class="tl-item" data-type="ctf">
-                    <details class="tl-details">
-                        <summary>
-                            <div class="tl-head">
-                                <h3 class="tl-title">Root-Me Pro — challenges &amp; ateliers</h3>
-                                <span class="tl-period">En continu</span>
-                            </div>
-                            <span class="badge">CTF</span>
-                            <p>Challenges réguliers et ateliers encadrés.</p>
-                            <span class="tl-more" aria-hidden="true">Voir le détail</span>
-                        </summary>
-                        <div class="tl-body">
-                            <h4 class="tl-body-title">Missions</h4>
-                            <ul class="tl-missions">
-                                <li class="todo">[Score / nombre de challenges résolus]</li>
-                                <li class="todo">[Catégories favorites]</li>
-                                <li class="todo">[Atelier ou challenge marquant]</li>
-                            </ul>
-                            <p class="tl-skills"><strong>Compétences mobilisées :</strong> curiosité, persévérance, <span class="todo">[compétences techniques]</span></p>
-                        </div>
-                    </details>
-                </li>
-
-                <li class="tl-item" data-type="clusir">
-                    <details class="tl-details">
-                        <summary>
-                            <div class="tl-head">
-                                <h3 class="tl-title">Membre — CLUSIR Auvergne-Rhône-Alpes</h3>
-                                <span class="tl-period">2025 — aujourd'hui</span>
-                            </div>
-                            <span class="badge">Associatif</span>
-                            <p>Conférences et événements cyber de la région, échanges avec des RSSI et professionnels du secteur.</p>
-                            <span class="tl-more" aria-hidden="true">Voir le détail</span>
-                        </summary>
-                        <div class="tl-body">
-                            <h4 class="tl-body-title">Missions</h4>
-                            <ul class="tl-missions">
-                                <li class="todo">[Événement ou conférence marquant·e, et ce que tu en as retenu]</li>
-                                <li class="todo">[Groupe de travail ou rôle éventuel]</li>
-                                <li class="todo">[Rencontres utiles pour ton projet pro]</li>
-                            </ul>
-                            <p class="tl-skills"><strong>Compétences mobilisées :</strong> veille, réseau professionnel, culture GRC</p>
-                        </div>
-                    </details>
-                </li>
-
-                <li class="tl-item" data-type="avant">
-                    <details class="tl-details">
-                        <summary>
-                            <div class="tl-head">
-                                <h3 class="tl-title">Restauration haut de gamme &amp; bar en palace</h3>
-                                <span class="tl-period todo">[AAAA – AAAA]</span>
-                            </div>
-                            <span class="badge">Avant la cyber</span>
-                            <p>Plusieurs années en environnement très exigeant : encadrement, relation client de haut niveau, gestion du stress et rigueur opérationnelle.</p>
-                            <span class="tl-more" aria-hidden="true">Voir le détail</span>
-                        </summary>
-                        <div class="tl-body">
-                            <h4 class="tl-body-title">Missions</h4>
-                            <ul class="tl-missions">
-                                <li class="todo">[Postes occupés et établissements]</li>
-                                <li class="todo">[Encadrement : taille de l'équipe, formation des nouveaux]</li>
-                                <li class="todo">[Organisation du service, gestion des priorités en plein rush]</li>
-                                <li class="todo">[Relation avec une clientèle exigeante, gestion des situations délicates]</li>
-                            </ul>
-                            <p class="tl-skills"><strong>Compétences mobilisées :</strong> management, gestion du stress, communication, rigueur, directement transférables au conseil et à la GRC</p>
-                        </div>
-                    </details>
-                </li>
-            </ol>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════ 06 · ATELIER ═══════════════════════════ -->
-    <section id="atelier" class="section section-alt" aria-labelledby="atelier-title">
-        <div class="container">
-            <div class="atelier-teaser">
-                <div>
-                    <p class="eyebrow">06 · Atelier</p>
-                    <h2 id="atelier-title" class="section-title">L'atelier découverte</h2>
-                    <p class="section-intro">
-                        Des mini-missions de 5 minutes pour découvrir la cybersécurité sans aucune connaissance,
-                        pensées pour les journées portes ouvertes. Chaque erreur donne un indice et chaque mission
-                        se termine par un badge et la découverte d'un métier. Tout tourne dans ton navigateur,
-                        rien n'est envoyé nulle part.
-                    </p>
-                    <a class="btn btn-primary" href="atelier.html">Choisir une mission →</a>
-                </div>
-                <ul class="atelier-list" aria-label="Missions de l'atelier">
-                    <li><a href="mission.html?m=reseau"><span class="atelier-num" aria-hidden="true">🌐</span><span>Réseau : le voyage d'un message</span><span class="atelier-go" aria-hidden="true">→</span></a></li>
-                    <li><a href="mission.html?m=devsecops"><span class="atelier-num" aria-hidden="true">⚙️</span><span>DevSecOps : l'usine à applis</span><span class="atelier-go" aria-hidden="true">→</span></a></li>
-                    <li><a href="mission.html?m=osint"><span class="atelier-num" aria-hidden="true">🔍</span><span>OSINT : le détective d'Internet</span><span class="atelier-go" aria-hidden="true">→</span></a></li>
-                    <li><a href="mission.html?m=pentest"><span class="atelier-num" aria-hidden="true">🎯</span><span>Pentest : le cambrioleur autorisé</span><span class="atelier-go" aria-hidden="true">→</span></a></li>
-                    <li><a href="mission.html?m=crypto"><span class="atelier-num" aria-hidden="true">🔐</span><span>Crypto : messages secrets</span><span class="atelier-go" aria-hidden="true">→</span></a></li>
-                </ul>
-            </div>
-        </div>
-    </section>
-
-    <!-- ═══════════════════════════ 07 · CONTACT ═══════════════════════════ -->
-    <section id="contact" class="section" aria-labelledby="contact-title">
-        <div class="container narrow">
-            <p class="eyebrow">07 · Contact</p>
-            <h2 id="contact-title" class="section-title">Me contacter</h2>
-            <p class="section-intro">Disponible pour échanger sur un stage de fin de B2 : grand groupe, secteur public ou défense, région lyonnaise.</p>
-
-            <div class="contact">
-                <!-- Email : jamais écrit en clair dans le code. Il est assemblé au clic
-                     à partir de morceaux (data-u / data-d), ce qui bloque la plupart des robots. -->
-                <div class="contact-row">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
-                    <span class="contact-label">Email</span>
-                    <span class="contact-value" id="email-value" aria-live="polite">Cliquer pour afficher</span>
-                    <span class="contact-actions">
-                        <button class="btn btn-small" type="button" id="email-reveal" data-u="ZGF0aHVleXQ=" data-d="cHJvdG9uLm1l">Afficher</button>
-                        <button class="btn btn-small btn-ghost" type="button" id="email-copy" hidden>Copier</button>
-                    </span>
-                </div>
-                <div class="contact-row">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z"/></svg>
-                    <span class="contact-label">LinkedIn</span>
-                    <a class="contact-value" href="https://www.linkedin.com/in/damien-dathueyt" target="_blank" rel="noopener noreferrer">linkedin.com/in/damien-dathueyt</a>
-                </div>
-                <div class="contact-row">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.4-4-1.4-.6-1.4-1.4-1.8-1.4-1.8-1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.7-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0C17.3 4.7 18.3 5 18.3 5c.7 1.7.3 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .3"/></svg>
-                    <span class="contact-label">GitHub</span>
-                    <a class="contact-value" href="https://github.com/Zyphang" target="_blank" rel="noopener noreferrer">github.com/Zyphang</a>
-                </div>
-            </div>
-        </div>
-    </section>
-</main>
-
-<footer class="site-footer">
-    <div class="container footer-row">
-        <span>© <span id="year">2026</span> Damien Dathueyt</span>
-        <span class="footer-sec">Site 100 % statique · 0 cookie · 0 traceur · <a href=".well-known/security.txt">security.txt</a></span>
+  <div class="info-grid">
+    <div class="info-card">
+      <div class="ico">⏱️</div>
+      <h3>Chrono géant</h3>
+      <p>Affiché en permanence, visible de loin par toute l'équipe</p>
     </div>
-</footer>
+    <div class="info-card">
+      <div class="ico">📨</div>
+      <h3>3 injects automatiques</h3>
+      <p>Plein écran, son d'alerte. À 5, 20 et 35 minutes</p>
+    </div>
+    <div class="info-card">
+      <div class="ico">🔔</div>
+      <h3>11 signaux de stress</h3>
+      <p>Pop-ups intermédiaires pour pimenter le scénario</p>
+    </div>
+    <div class="info-card">
+      <div class="ico">🎯</div>
+      <h3>Sprint d'écriture</h3>
+      <p>Compte à rebours dramatique de 5 min après l'inject #3</p>
+    </div>
+  </div>
+
+  <div class="start-panel">
+    <label class="checkbox-row">
+      <input type="checkbox" id="syncMode">
+      <span>Mode synchronisation 2 salles : démarrer à une heure précise</span>
+    </label>
+    <div id="syncRow" style="display:none;">
+      <label>Heure de démarrage (système des 2 ordinateurs)</label>
+      <div class="row">
+        <input type="time" id="startTime" step="1">
+      </div>
+      <p style="color: var(--muted); font-size: 0.8rem; margin-bottom: 1rem; text-align: left;">
+        💡 Ouvrez cette page sur les 2 écrans, choisissez la même heure, validez sur les 2.
+      </p>
+    </div>
+    <button class="primary" id="startBtn">▶ Démarrer l'atelier</button>
+  </div>
+
+  <button class="secondary" id="testSoundBtn">🔊 Tester le son</button>
+  <p style="color: var(--muted); font-size: 0.8rem; margin-top: 2rem; max-width: 600px;">
+    Astuce : appuyez sur <kbd style="background:var(--card);padding:2px 6px;border-radius:4px;border:1px solid var(--border);">F11</kbd> pour passer en plein écran avant de démarrer.
+  </p>
+</div>
+
+<!-- ============= COUNTDOWN-TO-START ============= -->
+<div id="countdown" class="screen">
+  <div class="label">Démarrage dans</div>
+  <div class="timer-big" id="cdTimer">00:00</div>
+  <div class="sub" id="cdSub">L'atelier va commencer automatiquement. Allez dans la deuxième salle si nécessaire.</div>
+  <button class="cancel" id="cdCancel">Annuler</button>
+</div>
+
+<!-- ============= MAIN SCREEN ============= -->
+<div id="main" class="screen">
+  <div class="phase-bar">
+    <div class="left">
+      <div class="pulse"></div>
+      <div>
+        <div class="title" id="phaseTitle">BRIEFING</div>
+        <div class="subtitle" id="phaseSub">Choix des rôles &amp; contexte</div>
+      </div>
+    </div>
+    <div class="controls">
+      <button class="ctrl-btn" id="fullscreenBtn">⛶ Plein écran</button>
+      <button class="ctrl-btn" id="pauseBtn">⏸ Pause</button>
+      <button class="ctrl-btn" id="restartBtn">↺ Recommencer</button>
+    </div>
+  </div>
+  <div class="main-stage" id="mainStage">
+    <div class="sprint-banner">⏰ Sprint d'écriture en cours</div>
+    <div id="mainTimer">00:00</div>
+    <div id="sprintTimer">05:00</div>
+    <div class="timer-label" id="timerLabel">Temps écoulé</div>
+    <div class="sprint-task">
+      <strong>À rendre :</strong> 1 communiqué de presse de 6 lignes max + 1 message clients de 3 lignes.<br>
+      Le DG lit les deux textes à voix haute à la fin du chrono.
+    </div>
+    <div class="next-event" id="nextEvent"></div>
+  </div>
+</div>
+
+<!-- ============= INJECT OVERLAY ============= -->
+<div id="injectOverlay">
+  <div class="inject-wrap" id="injectContent"></div>
+</div>
+
+<!-- ============= POPUP CONTAINER ============= -->
+<div class="popup-container" id="popupContainer"></div>
+
+<!-- ============= DEBRIEF SCREEN ============= -->
+<div id="debrief" class="screen">
+  <h1>🎯 Débrief</h1>
+  <p class="subtitle">L'attaque est finie. Vous pouvez respirer. 10 minutes pour transformer l'expérience.</p>
+
+  <div class="reflex-grid">
+    <div class="reflex tracer">
+      <div class="num">1</div>
+      <h3>Tracer</h3>
+      <p>Une décision non tracée est une décision perdue. Le Scribe est la mémoire opérationnelle, juridique et historique de la crise.</p>
+    </div>
+    <div class="reflex trancher">
+      <div class="num">2</div>
+      <h3>Trancher</h3>
+      <p>Une décision à 70 % d'information prise en 2 minutes vaut mieux qu'une décision à 95 % d'information prise en 30 minutes.</p>
+    </div>
+    <div class="reflex parler">
+      <div class="num">3</div>
+      <h3>Parler</h3>
+      <p>Le silence est interprété comme un aveu. 3 publics à ne jamais oublier : salariés, clients, autorités.</p>
+    </div>
+  </div>
+
+  <div class="quote-final">
+    « Demain, dans votre vraie boîte, quelle est la première question que vous allez poser à votre DSI ou à votre direction ? »
+  </div>
+</div>
+
+<!-- ============= END SCREEN ============= -->
+<div id="endscreen" class="screen">
+  <h1>Fin de l'atelier</h1>
+  <p>Vous venez de vivre en 60 minutes ce que des dirigeants vivent réellement en plusieurs jours.<br>
+  La cybersécurité, ce n'est pas un sujet d'experts — c'est un sujet de décideurs.<br><br>Merci.</p>
+  <button class="secondary" id="restartBtn2" style="margin-top:2rem;">↺ Recommencer un atelier</button>
+</div>
+
+<!-- ============= DEV CONTROLS (hidden by default) ============= -->
+<div class="dev-controls" id="devControls">
+  <button data-skip="0">T+0</button>
+  <button data-skip="290">T+4:50</button>
+  <button data-skip="1190">T+19:50</button>
+  <button data-skip="2090">T+34:50</button>
+  <button data-skip="2990">T+49:50</button>
+  <button data-skip="3590">T+59:50</button>
+  <button id="devClose">×</button>
+</div>
+
+<script>
+// ============================================================
+// AUDIO ENGINE (Web Audio API — no external files)
+// ============================================================
+let audioCtx = null;
+function ensureAudio() {
+  if (!audioCtx) {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      audioCtx = new AC();
+    } catch (e) { console.warn('Audio not available'); }
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+}
+function beep(freq, duration, type='sine', volume=0.4, startDelay=0) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  const t0 = audioCtx.currentTime + startDelay;
+  gain.gain.setValueAtTime(0, t0);
+  gain.gain.linearRampToValueAtTime(volume, t0 + 0.02);
+  gain.gain.exponentialRampToValueAtTime(0.001, t0 + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start(t0);
+  osc.stop(t0 + duration + 0.1);
+}
+const SOUNDS = {
+  alarm() {
+    ensureAudio();
+    beep(880, 0.18, 'square', 0.45, 0);
+    beep(1100, 0.18, 'square', 0.45, 0.22);
+    beep(880, 0.18, 'square', 0.45, 0.44);
+    beep(1100, 0.35, 'square', 0.45, 0.66);
+    beep(660, 0.55, 'square', 0.35, 1.05);
+  },
+  popup() {
+    ensureAudio();
+    beep(700, 0.12, 'sine', 0.35, 0);
+    beep(950, 0.16, 'sine', 0.35, 0.13);
+  },
+  warning() {
+    ensureAudio();
+    beep(1200, 0.3, 'triangle', 0.4, 0);
+  },
+  chime() {
+    ensureAudio();
+    beep(523, 0.2, 'sine', 0.35, 0);
+    beep(659, 0.2, 'sine', 0.35, 0.18);
+    beep(784, 0.4, 'sine', 0.35, 0.36);
+  }
+};
+
+// ============================================================
+// INJECT CONTENT
+// ============================================================
+const INJECT_HTML = {
+  1: `
+    <div class="inject-banner"><span class="blink"></span> 📨 INJECT #1 — LE DIAGNOSTIC <span class="blink"></span></div>
+    <div class="mail">
+      <div class="mail-header">
+        <div class="row"><span class="label">DE :</span> Karim B. — Administrateur Système</div>
+        <div class="row"><span class="label">À :</span> Direction</div>
+        <div class="row"><span class="label">OBJET :</span> <span class="subject-red">⚠️ URGENT — SI inaccessible — Situation critique</span></div>
+        <div class="row"><span class="label">ENVOYÉ :</span> Lundi, 07h52</div>
+      </div>
+      <p>Bonjour,</p>
+      <p>Je vous écris depuis mon téléphone perso, je n'ai plus accès à ma session.</p>
+      <p><strong>Voilà ce que je constate depuis 07h35 :</strong></p>
+      <ul>
+        <li>Tous les serveurs de fichiers du siège sont inaccessibles</li>
+        <li>Les postes des collègues arrivés ce matin affichent un écran noir avec un message en anglais</li>
+        <li>La plateforme client (site + appli) est tombée à 07h41</li>
+        <li>Les extensions des fichiers que j'arrive à voir sur les sauvegardes sont passées en <strong>.LOCKED</strong></li>
+        <li>Un fichier <strong>README_RESTORE.txt</strong> est apparu sur chaque dossier partagé</li>
+      </ul>
+      <p>Ci-dessous, le contenu du fichier :</p>
+      <div class="quote">
+        « Your network has been encrypted by BlackVeil group. All your files, including customer databases, financial records and internal communications are now under our control. We have also exfiltrated 340 GB of data. Do not attempt to restore from backups — they are also encrypted. Instructions for payment will follow within 12 hours. Any contact with law enforcement will accelerate the publication of your data. »
+      </div>
+      <p>Je n'ai pas encore touché aux switches. Les sauvegardes hors-ligne (bandes) datent de <strong>vendredi soir</strong>. La sauvegarde cloud semble aussi affectée.</p>
+      <p><strong>Les équipes logistique appellent : les bons de commande pour les livraisons de mardi sont sur le serveur. Sans accès, on ne peut pas préparer les tournées.</strong></p>
+      <p>Qu'est-ce que je fais ? J'attends vos instructions.</p>
+      <p class="signature">Karim</p>
+    </div>
+    <button class="inject-close" data-close="inject">FERMER ET REPRENDRE LE CHRONO</button>
+  `,
+  2: `
+    <div class="inject-banner"><span class="blink"></span> 📨 INJECT #2 — LE CHANTAGE <span class="blink"></span></div>
+    <div class="mail">
+      <div class="mail-header">
+        <div class="row"><span class="label">DE :</span> contact@blackveil-recovery.onion (via tor relay)</div>
+        <div class="row"><span class="label">À :</span> direction@biopanier.fr ; presse@biopanier.fr ; rh@biopanier.fr ; (+14 autres destinataires internes)</div>
+        <div class="row"><span class="label">OBJET :</span> <strong>BioPanier — Recovery Terms — Reference #BV-2026-0517</strong></div>
+        <div class="row"><span class="label">REÇU :</span> Lundi, 08h08</div>
+      </div>
+      <p>Bonjour direction de BioPanier,</p>
+      <p>Nous sommes le groupe <strong>BlackVeil</strong>. Vous êtes désormais l'une de nos 47 références actives. Voici les termes :</p>
+      <p><strong>1. Montant :</strong> <span class="alert-amount">1 800 000 € en Bitcoin (BTC)</span> à l'adresse qui vous sera communiquée après votre premier contact via notre portail Tor.</p>
+      <p><strong>2. Délai :</strong> <span class="alert-amount">48 heures</span> à compter de la réception de ce message.</p>
+      <p><strong>3. Contenu de l'exfiltration (340 Go) :</strong></p>
+      <ul>
+        <li>Base clients complète (62 047 lignes) : nom, adresse, téléphone, email, historique de commandes, <strong>données bancaires partielles, préférences alimentaires/santé</strong></li>
+        <li>Contrats fournisseurs et grille tarifaire</li>
+        <li>Boîtes mail de la direction (3 ans d'historique)</li>
+        <li>Documents RH (fiches de paie, contrats, arrêts maladie)</li>
+        <li><strong>Dossier « Levée de fonds 2026 »</strong> incluant pacte d'actionnaires</li>
+      </ul>
+      <p><strong>4. Preuve de bonne foi :</strong> vous trouverez en pièce jointe (lien Tor) un échantillon de 500 fiches clients ainsi que <strong>la fiche de paie du DG</strong>.</p>
+      <p><strong>5. Conséquences en cas de non-paiement :</strong></p>
+      <ul>
+        <li>H+48 : publication d'un teaser sur notre blog public</li>
+        <li>H+72 : publication de 10 % des données</li>
+        <li>H+96 : publication intégrale + alerte aux principaux médias français et à la CNIL</li>
+      </ul>
+      <p><strong>6. Conditions :</strong></p>
+      <ul>
+        <li>Aucun contact avec les autorités (nous le saurons)</li>
+        <li>Aucune communication publique avant accord (nous surveillons)</li>
+        <li><span class="alert-amount">Le prix double à H+24</span></li>
+      </ul>
+      <p>Nous sommes des professionnels. Une fois le paiement reçu, vous recevrez la clé de déchiffrement et la confirmation de destruction des données. Nous n'avons aucun intérêt à mentir : notre réputation en dépend.</p>
+      <p><strong><em>Le temps tourne.</em></strong></p>
+      <p class="signature">— BlackVeil</p>
+    </div>
+    <button class="inject-close" data-close="inject">FERMER ET REPRENDRE LE CHRONO</button>
+  `,
+  3: `
+    <div class="inject-banner"><span class="blink"></span> 📨 INJECT #3 — LA PANIQUE <span class="blink"></span></div>
+    <div style="background: var(--card); padding: 1.25rem 1.5rem; border-radius: 0 0 12px 12px; border: 1px solid var(--border); border-top: none;">
+
+      <div class="cascade-msg" style="animation-delay: 0s;">
+        <div class="ico-title">📱 Message A — SMS de l'attaché de presse</div>
+        <div class="meta"><strong style="color:var(--text);">SMS — 08h31</strong> — De : Léa (Com')</div>
+        <div class="body">
+          « URGENT — Le Progrès vient d'appeler. Ils ont reçu un tuyau anonyme + capture d'écran de la note ransom. Ils publient un article dans <strong>30 minutes</strong> s'ils n'ont pas notre réaction. La journaliste demande :<br><br>
+          <em><strong>« Est-ce que les données clients ont fuité ? Combien de personnes touchées ? Allez-vous payer ? »</strong></em><br><br>
+          Je dis quoi ?? »
+        </div>
+      </div>
+
+      <div class="cascade-msg" style="animation-delay: 0.4s;">
+        <div class="ico-title">🐦 Message B — Capture X (Twitter)</div>
+        <div class="meta red">Post viral — 12 400 retweets en 20 minutes</div>
+        <div class="body">
+          <span class="twitter-handle">@JulieMangeBio</span> · <span style="color:var(--muted);">il y a 23 min</span><br><br>
+          <em>« Mon @BioPanier est en rade depuis ce matin, ma CB a été débitée et la livraison ne vient pas. Et là je vois passer une rumeur de hack ? 😡 On parle de DONNÉES MÉDICALES (régimes, allergies) ! Si c'est vrai c'est gravissime. @CNIL @60millions »</em>
+          <div class="stats">💬 847 commentaires    🔁 12 400    ❤️ 8 200</div>
+        </div>
+      </div>
+
+      <div class="cascade-msg" style="animation-delay: 0.8s;">
+        <div class="ico-title">☎️ Message C — Note du standard</div>
+        <div class="meta"><strong style="color:var(--text);">Note — Standard téléphonique — 08h33</strong></div>
+        <div class="body">
+          « Le standard est saturé. <strong>200 appels en attente</strong>. Les clients demandent si leurs données sont touchées et veulent annuler leur abonnement. Trois fournisseurs ont aussi appelé : ils ont vu passer 'un truc' sur LinkedIn et veulent des explications avant les livraisons de demain. Une salariée pleure parce que sa fiche de paie circulerait. <strong>Qu'est-ce qu'on répond ? »</strong>
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(135deg, var(--amber) 0%, #d97706 100%); color: #1a1a1a; padding: 1.25rem 1.5rem; border-radius: 10px; margin-top: 1rem;">
+        <div style="font-weight: 800; font-size: 1.1em; margin-bottom: 0.5rem; letter-spacing: 0.05em; text-transform: uppercase;">🎯 Mission Sprint — 5 minutes chrono</div>
+        <div>À rendre dans 5 minutes :</div>
+        <ol style="margin: 0.5rem 0 0.5rem 1.5rem;">
+          <li>Un <strong>communiqué de presse de 6 lignes maximum</strong> pour Le Progrès</li>
+          <li>Un <strong>message clients de 3 lignes</strong> à publier sur la page d'accueil de secours</li>
+        </ol>
+        <div style="margin-top: 0.5rem;"><em>Le DG lit à voix haute les deux textes à la fin du chrono. Le sprint démarre automatiquement dans 20 secondes.</em></div>
+      </div>
+    </div>
+    <button class="inject-close" data-close="inject">FERMER (le sprint démarrera automatiquement)</button>
+  `
+};
+
+// ============================================================
+// TIMELINE
+// ============================================================
+const TIMELINE = [
+  // Briefing
+  { t: 0, type: 'phase', title: 'BRIEFING', sub: 'Choix des rôles & lecture du contexte' },
+
+  // === PHASE 1 — Le Diagnostic (5-20 min) ===
+  { t: 5*60, type: 'phase', title: 'PHASE 1 — LE DIAGNOSTIC', sub: '15 minutes pour évaluer la situation', sound: 'alarm' },
+  { t: 5*60, type: 'inject', injectId: 1 },
+  { t: 8*60, type: 'popup', icon: '📞', title: 'Karim relance', body: 'Karim attend toujours vos instructions. Il dit qu\'il rappelle dans <strong>2 minutes</strong> si pas de retour.', class: 'urgent', sound: 'popup' },
+  { t: 12*60, type: 'popup', icon: '🚚', title: 'Directeur logistique', body: 'Le directeur logistique veut savoir si on annule les livraisons de mardi. <strong>Il a besoin d\'une réponse maintenant.</strong>', class: 'urgent', sound: 'popup' },
+  { t: 16*60, type: 'popup', icon: '👔', title: 'Conseil d\'administration', body: 'Le président du CA vient d\'apprendre la situation par un salarié. Il veut <strong>un point en visio dans 10 minutes</strong>.', class: 'urgent', sound: 'popup' },
+  { t: 18*60, type: 'popup', icon: '⏰', title: '2 minutes restantes', body: 'Plus que <strong>2 minutes</strong> avant la prochaine évolution de la situation.', class: 'info', sound: 'warning' },
+
+  // === PHASE 2 — Le Chantage (20-35 min) ===
+  { t: 20*60, type: 'phase', title: 'PHASE 2 — LE CHANTAGE', sub: '15 minutes pour décider', sound: 'alarm' },
+  { t: 20*60, type: 'inject', injectId: 2 },
+  { t: 23*60, type: 'popup', icon: '💼', title: 'Investisseur', body: 'Mail d\'un investisseur de la levée de fonds : <em>« Que se passe-t-il ? Confirmez-moi avant 10h que mes données ne sont pas concernées. »</em>', class: 'urgent', sound: 'popup' },
+  { t: 26*60, type: 'popup', icon: '⚖️', title: 'CNIL — 72h', body: 'Avez-vous notifié la CNIL ? Vous avez <strong>72h</strong>, le chrono a commencé à 7h35.', class: 'info', sound: 'popup' },
+  { t: 29*60, type: 'popup', icon: '💾', title: 'Karim — Sauvegardes', body: '« Les sauvegardes de vendredi ont l\'air saines. Restauration possible en <strong>36h</strong> mais on perd 3 jours de commandes. » <em>Ça change quelque chose ?</em>', class: 'info', sound: 'popup' },
+  { t: 32*60, type: 'popup', icon: '🚨', title: 'Décision rançon ?', body: '<strong>Oui ou non. J\'ai besoin de la réponse maintenant pour la suite.</strong>', class: 'urgent', sound: 'warning' },
+
+  // === PHASE 3 — La Panique (35-50 min) ===
+  { t: 35*60, type: 'phase', title: 'PHASE 3 — LA PANIQUE', sub: 'Pression médiatique en cascade', sound: 'alarm' },
+  { t: 35*60, type: 'inject', injectId: 3 },
+  { t: 36*60, type: 'sprint-start' },
+  { t: 38*60, type: 'popup', icon: '⏰', title: '3 minutes', body: 'Le Progrès attend votre réaction.', class: 'urgent', sound: 'warning' },
+  { t: 40*60, type: 'popup', icon: '⏰', title: '1 minute', body: 'La journaliste a dit qu\'elle publie <strong>même sans réponse</strong>.', class: 'urgent', sound: 'warning' },
+  { t: 41*60, type: 'sprint-end' },
+  { t: 41*60, type: 'popup', icon: '🛑', title: 'STOP', body: 'Posez les stylos. Le DG lit à voix haute le communiqué de presse, puis le message clients.', class: 'urgent', sound: 'alarm' },
+
+  // === DÉBRIEF (50-60 min) ===
+  { t: 50*60, type: 'debrief', sound: 'chime' },
+
+  // === FIN (60 min) ===
+  { t: 60*60, type: 'end', sound: 'chime' }
+];
+
+// ============================================================
+// STATE & ENGINE
+// ============================================================
+const state = {
+  startTimestamp: null,   // wall-clock ms when atelier started
+  pausedAt: null,         // ms when paused, null if running
+  pauseAccumulated: 0,    // total paused duration (ms)
+  scheduledStart: null,   // wall-clock ms scheduled start
+  countdownInterval: null,
+  tickInterval: null,
+  firedEvents: new Set(), // index of events already fired
+  sprintActive: false,
+  sprintStart: null,
+};
+
+function $(id) { return document.getElementById(id); }
+function show(id) {
+  document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
+  $(id).classList.add('active');
+}
+
+function fmtTime(seconds) {
+  if (seconds < 0) seconds = 0;
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
+}
+
+function nowMs() { return Date.now(); }
+
+function elapsedSeconds() {
+  if (!state.startTimestamp) return 0;
+  const now = state.pausedAt ?? nowMs();
+  return Math.floor((now - state.startTimestamp - state.pauseAccumulated) / 1000);
+}
+
+// ============================================================
+// COUNTDOWN-TO-START (sync mode)
+// ============================================================
+function scheduleStart(targetWallClockMs) {
+  state.scheduledStart = targetWallClockMs;
+  show('countdown');
+  if (state.countdownInterval) clearInterval(state.countdownInterval);
+  state.countdownInterval = setInterval(() => {
+    const remaining = Math.max(0, Math.ceil((targetWallClockMs - nowMs()) / 1000));
+    $('cdTimer').textContent = fmtTime(remaining);
+    if (remaining <= 0) {
+      clearInterval(state.countdownInterval);
+      state.countdownInterval = null;
+      beginAtelier();
+    }
+  }, 200);
+}
+
+// ============================================================
+// MAIN LOOP
+// ============================================================
+function beginAtelier() {
+  state.startTimestamp = nowMs();
+  state.pauseAccumulated = 0;
+  state.pausedAt = null;
+  state.firedEvents.clear();
+  show('main');
+  // Try to acquire wake lock so the screen doesn't sleep
+  if ('wakeLock' in navigator) {
+    navigator.wakeLock.request('screen').catch(() => {});
+  }
+  startTick();
+  // Fire t=0 events
+  processEvents();
+}
+
+function startTick() {
+  if (state.tickInterval) clearInterval(state.tickInterval);
+  state.tickInterval = setInterval(() => {
+    if (state.pausedAt) return;
+    updateMainTimer();
+    updateSprintTimer();
+    processEvents();
+    updateNextEvent();
+  }, 200);
+}
+
+function updateMainTimer() {
+  const e = elapsedSeconds();
+  $('mainTimer').textContent = fmtTime(e);
+
+  // Color cues for last 5 sec of warnings
+  $('mainTimer').classList.remove('warn', 'alert');
+}
+
+function updateSprintTimer() {
+  if (!state.sprintActive) return;
+  const e = elapsedSeconds();
+  const sprintElapsed = e - state.sprintStart;
+  const remaining = Math.max(0, 5 * 60 - sprintElapsed);
+  $('sprintTimer').textContent = fmtTime(remaining);
+  if (remaining <= 60) {
+    $('sprintTimer').classList.add('critical');
+  }
+  if (remaining <= 0 && state.sprintActive) {
+    // sprint just ended via natural countdown
+  }
+}
+
+function processEvents() {
+  const e = elapsedSeconds();
+  TIMELINE.forEach((evt, idx) => {
+    if (state.firedEvents.has(idx)) return;
+    if (e >= evt.t) {
+      state.firedEvents.add(idx);
+      fireEvent(evt);
+    }
+  });
+}
+
+function fireEvent(evt) {
+  if (evt.sound && SOUNDS[evt.sound]) {
+    try { SOUNDS[evt.sound](); } catch(e){}
+  }
+  switch (evt.type) {
+    case 'phase':
+      $('phaseTitle').textContent = evt.title;
+      $('phaseSub').textContent = evt.sub || '';
+      break;
+    case 'inject':
+      showInject(evt.injectId);
+      break;
+    case 'popup':
+      showPopup(evt);
+      break;
+    case 'sprint-start':
+      state.sprintActive = true;
+      state.sprintStart = elapsedSeconds();
+      $('mainStage').classList.add('sprint');
+      $('timerLabel').textContent = 'Temps total écoulé';
+      break;
+    case 'sprint-end':
+      state.sprintActive = false;
+      $('mainStage').classList.remove('sprint');
+      $('timerLabel').textContent = 'Temps écoulé';
+      $('sprintTimer').classList.remove('critical');
+      break;
+    case 'debrief':
+      show('debrief');
+      break;
+    case 'end':
+      clearInterval(state.tickInterval);
+      show('endscreen');
+      break;
+  }
+}
+
+function updateNextEvent() {
+  const e = elapsedSeconds();
+  let next = null;
+  for (const evt of TIMELINE) {
+    if (evt.t > e && (evt.type === 'phase' || evt.type === 'inject' || evt.type === 'debrief' || evt.type === 'end')) {
+      next = evt; break;
+    }
+  }
+  if (!next) {
+    $('nextEvent').textContent = '';
+    return;
+  }
+  const remaining = next.t - e;
+  let label = '';
+  if (next.type === 'inject') label = `Prochain inject dans `;
+  else if (next.type === 'phase') label = `Prochaine phase dans `;
+  else if (next.type === 'debrief') label = `Débrief dans `;
+  else if (next.type === 'end') label = `Fin dans `;
+  $('nextEvent').innerHTML = label + `<span class="cnt">${fmtTime(remaining)}</span>`;
+}
+
+// ============================================================
+// INJECT OVERLAY
+// ============================================================
+function showInject(id) {
+  const wrap = $('injectContent');
+  wrap.innerHTML = INJECT_HTML[id];
+  $('injectOverlay').classList.add('active');
+  // Auto-trigger sprint after inject 3
+  if (id === 3) {
+    // Sprint will start via sprint-start event in timeline
+  }
+}
+function closeInject() {
+  $('injectOverlay').classList.remove('active');
+}
+
+// ============================================================
+// POPUPS
+// ============================================================
+function showPopup(evt) {
+  const c = $('popupContainer');
+  const div = document.createElement('div');
+  div.className = 'popup ' + (evt.class || '');
+  div.innerHTML = `
+    <div class="ico-line">
+      <span class="ico">${evt.icon || '🔔'}</span>
+      <span class="title">${evt.title}</span>
+      <span class="close-x">×</span>
+    </div>
+    <div class="body">${evt.body}</div>
+  `;
+  c.appendChild(div);
+  const dismiss = () => {
+    div.classList.add('dismissing');
+    setTimeout(() => div.remove(), 300);
+  };
+  div.querySelector('.close-x').addEventListener('click', e => { e.stopPropagation(); dismiss(); });
+  div.addEventListener('click', dismiss);
+  // Auto-dismiss after 45 seconds
+  setTimeout(dismiss, 45000);
+}
+
+// ============================================================
+// CONTROLS
+// ============================================================
+function togglePause() {
+  if (state.pausedAt) {
+    // Resume
+    state.pauseAccumulated += nowMs() - state.pausedAt;
+    state.pausedAt = null;
+    $('pauseBtn').textContent = '⏸ Pause';
+  } else {
+    state.pausedAt = nowMs();
+    $('pauseBtn').textContent = '▶ Reprendre';
+  }
+}
+
+function restart() {
+  if (!confirm('Recommencer un atelier complet ? Le chrono repart de zéro.')) return;
+  clearInterval(state.tickInterval);
+  state.tickInterval = null;
+  state.startTimestamp = null;
+  state.pausedAt = null;
+  state.pauseAccumulated = 0;
+  state.firedEvents.clear();
+  state.sprintActive = false;
+  $('mainStage').classList.remove('sprint');
+  $('injectOverlay').classList.remove('active');
+  $('popupContainer').innerHTML = '';
+  show('welcome');
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen?.();
+  } else {
+    document.exitFullscreen?.();
+  }
+}
+
+// ============================================================
+// EVENT WIRING
+// ============================================================
+$('syncMode').addEventListener('change', e => {
+  $('syncRow').style.display = e.target.checked ? 'block' : 'none';
+  if (e.target.checked) {
+    const now = new Date();
+    now.setMinutes(now.getMinutes() + 2);
+    now.setSeconds(0);
+    const hh = String(now.getHours()).padStart(2,'0');
+    const mm = String(now.getMinutes()).padStart(2,'0');
+    $('startTime').value = `${hh}:${mm}`;
+  }
+});
+
+$('startBtn').addEventListener('click', () => {
+  ensureAudio(); // capture user gesture for audio
+  if ($('syncMode').checked) {
+    const v = $('startTime').value;
+    if (!v) { alert('Choisissez une heure de démarrage.'); return; }
+    const [hh, mm] = v.split(':').map(Number);
+    const target = new Date();
+    target.setHours(hh, mm, 0, 0);
+    if (target.getTime() <= nowMs()) target.setDate(target.getDate() + 1);
+    scheduleStart(target.getTime());
+  } else {
+    beginAtelier();
+  }
+});
+
+$('testSoundBtn').addEventListener('click', () => {
+  ensureAudio();
+  SOUNDS.alarm();
+});
+
+$('cdCancel').addEventListener('click', () => {
+  if (state.countdownInterval) clearInterval(state.countdownInterval);
+  state.countdownInterval = null;
+  show('welcome');
+});
+
+$('fullscreenBtn').addEventListener('click', toggleFullscreen);
+$('pauseBtn').addEventListener('click', togglePause);
+$('restartBtn').addEventListener('click', restart);
+$('restartBtn2').addEventListener('click', () => show('welcome'));
+
+document.addEventListener('click', e => {
+  if (e.target.dataset.close === 'inject') closeInject();
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && $('injectOverlay').classList.contains('active')) {
+    closeInject();
+  }
+  if (e.key === 'f' && e.ctrlKey && e.shiftKey) {
+    e.preventDefault();
+    toggleFullscreen();
+  }
+  // Dev mode toggle: Ctrl+Shift+D
+  if (e.key === 'D' && e.ctrlKey && e.shiftKey) {
+    e.preventDefault();
+    $('devControls').classList.toggle('visible');
+  }
+});
+
+// Dev controls
+$('devControls').addEventListener('click', e => {
+  if (e.target.dataset.skip != null) {
+    const sec = parseInt(e.target.dataset.skip, 10);
+    if (!state.startTimestamp) return;
+    state.startTimestamp = nowMs() - sec * 1000;
+    state.pauseAccumulated = 0;
+    state.firedEvents.clear();
+    // Re-fire all events up to this point silently (just visual state)
+    TIMELINE.forEach((evt, idx) => {
+      if (evt.t <= sec) {
+        state.firedEvents.add(idx);
+        if (evt.type === 'phase') {
+          $('phaseTitle').textContent = evt.title;
+          $('phaseSub').textContent = evt.sub || '';
+        }
+        if (evt.type === 'sprint-start') {
+          state.sprintActive = true;
+          state.sprintStart = evt.t;
+          $('mainStage').classList.add('sprint');
+        }
+        if (evt.type === 'sprint-end') {
+          state.sprintActive = false;
+          $('mainStage').classList.remove('sprint');
+        }
+      }
+    });
+    $('injectOverlay').classList.remove('active');
+  }
+});
+$('devClose').addEventListener('click', () => $('devControls').classList.remove('visible'));
+
+// Dev mode via URL ?dev=1
+if (new URLSearchParams(location.search).get('dev') === '1') {
+  $('devControls').classList.add('visible');
+}
+
+// Prevent accidental close
+window.addEventListener('beforeunload', e => {
+  if (state.startTimestamp && !document.querySelector('#endscreen.active')) {
+    e.preventDefault();
+    return e.returnValue = 'Atelier en cours. Quitter ?';
+  }
+});
+</script>
 </body>
 </html>
