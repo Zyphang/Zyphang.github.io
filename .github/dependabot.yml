@@ -1,0 +1,7 @@
+# Met à jour automatiquement les actions GitHub épinglées par SHA (voir workflows/security.yml)
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"

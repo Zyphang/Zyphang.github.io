@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <!-- Même politique de sécurité que index.html (voir les commentaires là-bas) -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; manifest-src 'self'; media-src 'none'; object-src 'none'; frame-src 'none'; worker-src 'none'; base-uri 'none'; form-action 'none'; upgrade-insecure-requests; require-trusted-types-for 'script'; trusted-types 'none'">
+    <meta name="referrer" content="no-referrer">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Parcours express — Atelier cyber</title>
+    <meta name="description" content="Parcours express de l'atelier cyber : tester un mot de passe et repérer le phishing en 2 minutes.">
+    <link rel="canonical" href="https://zyphang.github.io/express.html">
+    <meta name="color-scheme" content="light dark">
+    <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+
+    <script src="assets/js/guard.js"></script>
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="assets/css/atelier.css">
+    <script src="assets/js/main.js" defer></script>
+    <script src="assets/js/kiosk.js" defer></script>
+    <script src="assets/js/express.js" defer></script>
+</head>
+
+<body class="atelier">
+<a href="#main" class="skip-link">Aller au contenu</a>
+
+<header class="site-header">
+    <nav class="nav container" aria-label="Atelier">
+        <a href="atelier.html" class="nav-logo">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            <span>Toutes les missions</span>
+        </a>
+        <div class="kiosk-actions">
+            <button class="btn btn-small btn-ghost" type="button" id="reset-all">Recommencer</button>
+            <button class="btn btn-small btn-ghost" type="button" id="fullscreen">Plein écran</button>
+            <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Changer de thème (clair / sombre)">
+                <svg class="icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+                <svg class="icon-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+            </button>
+        </div>
+    </nav>
+</header>
+
+<main id="main" class="container atelier-main">
+    <div class="atelier-intro">
+        <div>
+            <p class="eyebrow">Parcours express · 2 minutes</p>
+            <h1 class="atelier-title">Deux réflexes pour se protéger</h1>
+            <p class="section-intro">Tout se passe dans ce navigateur : rien n'est enregistré ni envoyé.</p>
+        </div>
+    </div>
+
+    <div class="tabs" data-tabs>
+        <div class="tablist tablist-big" role="tablist" aria-label="Défis">
+            <button role="tab" type="button" id="tab-pwd" aria-controls="panel-pwd" aria-selected="true"><span class="atelier-num">1</span>Mot de passe</button>
+            <button role="tab" type="button" id="tab-phish" aria-controls="panel-phish" aria-selected="false" tabindex="-1"><span class="atelier-num">2</span>Phishing</button>
+        </div>
+
+        <!-- ─────────────── Défi 1 : mot de passe ─────────────── -->
+        <section role="tabpanel" id="panel-pwd" aria-labelledby="tab-pwd" class="tabpanel panel-card">
+            <h2 class="panel-title">Combien de temps pour casser ton mot de passe ?</h2>
+            <p class="warn">⚠ N'écris pas un vrai mot de passe : invente-en un qui lui ressemble.</p>
+
+            <div class="field">
+                <label for="pwd">Tape un mot de passe inventé</label>
+                <div class="field-row">
+                    <input id="pwd" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="128">
+                    <button class="btn btn-ghost" type="button" id="pwd-show" aria-pressed="false">Afficher</button>
+                </div>
+            </div>
+
+            <div class="meter" aria-hidden="true"><span class="meter-bar" id="pwd-bar" data-score="0"></span></div>
+            <div class="pwd-result" aria-live="polite">
+                <p class="pwd-time"><span class="muted">Temps estimé pour le casser :</span> <strong id="pwd-time">—</strong></p>
+                <p class="pwd-verdict" id="pwd-verdict"></p>
+                <ul class="pwd-tips" id="pwd-tips"></ul>
+            </div>
+
+            <div class="passphrase">
+                <p><strong>L'astuce des pros :</strong> une phrase de passe (4 mots au hasard) est plus facile à retenir et bien plus solide.</p>
+                <div class="field-row">
+                    <output id="passphrase" class="mono-box">—</output>
+                    <button class="btn" type="button" id="passphrase-gen">Générer</button>
+                </div>
+            </div>
+            <p class="fineprint">Estimation pédagogique : attaquant hors ligne testant 10 milliards de combinaisons par seconde.</p>
+        </section>
+
+        <!-- ─────────────── Défi 2 : phishing ─────────────── -->
+        <section role="tabpanel" id="panel-phish" aria-labelledby="tab-phish" class="tabpanel panel-card">
+            <div class="phish-head">
+                <h2 class="panel-title">Vrai message ou piège ?</h2>
+                <span class="score" id="phish-progress">1 / 6</span>
+            </div>
+            <p class="fineprint">Marques et adresses fictives, créées pour l'atelier.</p>
+
+            <article class="message" id="phish-card" aria-live="polite">
+                <div class="message-head">
+                    <span class="badge" id="phish-kind">Email</span>
+                    <p class="message-from"><span class="muted">De :</span> <span id="phish-from"></span></p>
+                    <p class="message-subject" id="phish-subject"></p>
+                </div>
+                <p class="message-body" id="phish-body"></p>
+                <p class="message-link" id="phish-link-wrap"><span class="muted">Lien :</span> <span class="fake-link" id="phish-link"></span></p>
+            </article>
+
+            <div class="choice" id="phish-choice">
+                <button class="btn btn-choice btn-legit" type="button" data-answer="legit">✓ Légitime</button>
+                <button class="btn btn-choice btn-phish" type="button" data-answer="phish">⚠ Phishing</button>
+            </div>
+
+            <div class="feedback" id="phish-feedback" hidden>
+                <p class="feedback-title" id="phish-verdict"></p>
+                <ul class="clues" id="phish-clues"></ul>
+                <button class="btn" type="button" id="phish-next">Message suivant →</button>
+            </div>
+
+            <div class="feedback" id="phish-end" hidden>
+                <p class="feedback-title">Score : <span id="phish-score"></span></p>
+                <p>Le réflexe à retenir : <strong>urgence + lien + demande d'infos = on s'arrête</strong>. On passe par l'appli ou le site officiel, jamais par le lien du message.</p>
+                <button class="btn" type="button" id="phish-restart">Rejouer</button>
+            </div>
+        </section>
+    </div>
+
+    
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-row">
+        <span><a href="atelier.html">← Toutes les missions</a></span>
+        <span class="footer-sec">Aucune donnée collectée · fonctionne hors ligne</span>
+    </div>
+</footer>
+</body>
+</html>

@@ -1,0 +1,35 @@
+name: Contrôles de sécurité
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: "17 6 * * 1"   # chaque lundi : re-scan des secrets
+
+# Principe du moindre privilège : le jeton du workflow ne peut que lire le dépôt
+permissions:
+  contents: read
+
+jobs:
+  secrets:
+    name: Détection de secrets (gitleaks)
+    runs-on: ubuntu-latest
+    steps:
+      # Actions épinglées par SHA de commit (un tag peut être déplacé, pas un SHA)
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  static:
+    name: Politique CSP & code sûr
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+      - run: bash tools/check-security.sh

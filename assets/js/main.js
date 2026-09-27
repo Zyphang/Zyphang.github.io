@@ -1,397 +1,126 @@
-/* ════════════════════════════════════════════════════════════════════
-   CYBERFOLIO — Logique principale
-   ════════════════════════════════════════════════════════════════════
-
-   Ce que fait ce fichier :
-   1. Lit window.portfolioData (depuis data.js) et le pousse dans le HTML
-   2. Génère dynamiquement les cartes : skills, projets, certifs, timeline
-   3. Anti-scraping : assemble l'email côté client uniquement
-   4. Bouton "copier l'email" + lien mailto: dynamique
-   5. Toggle du menu mobile (hamburger)
-   6. Animations d'apparition au scroll (IntersectionObserver)
-   7. Met à jour l'année du footer automatiquement
-
-   Aucune dépendance externe — JavaScript natif uniquement.
-   ════════════════════════════════════════════════════════════════════ */
-
+/*
+ * main.js — interactions du cyberfolio.
+ * Règles de sécurité suivies dans ce fichier :
+ *  - aucun innerHTML / outerHTML / insertAdjacentHTML / eval (Trusted Types les bloque de toute façon)
+ *  - le texte est toujours injecté via textContent
+ *  - aucune requête réseau (connect-src 'none' dans la CSP)
+ */
 (function () {
     'use strict';
 
-    // Garde-fou : si data.js n'a pas chargé, on s'arrête proprement
-    if (!window.portfolioData) {
-        console.error('[cyberfolio] portfolioData manquant. Vérifie que data.js est chargé avant main.js.');
-        return;
-    }
+    var $ = function (sel, root) { return (root || document).querySelector(sel); };
+    var $$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
 
-    const data = window.portfolioData;
+    /* ── Année du footer ─────────────────────────────────────────── */
+    var year = $('#year');
+    if (year) year.textContent = String(new Date().getFullYear());
 
-    /* ──────────────────────────────────────────────────────────────────
-       Helpers DOM
-       ────────────────────────────────────────────────────────────────── */
-    const $  = (sel, root = document) => root.querySelector(sel);
-    const $$ = (sel, root = document) => Array.from(root.querySelectorAll(sel));
-
-    /** Crée un élément HTML avec attributs et enfants en une ligne.
-     *  SÉCURITÉ : aucune clé n'accepte de HTML brut. Le texte passe
-     *  exclusivement par textContent → échappement automatique par le
-     *  navigateur, aucune interprétation de balise possible (protection XSS
-     *  par construction, OWASP A03). */
-    function el(tag, attrs = {}, children = []) {
-        const node = document.createElement(tag);
-        for (const [key, value] of Object.entries(attrs)) {
-            if (key === 'class') node.className = value;
-            else if (key === 'text') node.textContent = value;
-            else node.setAttribute(key, value);
-        }
-        (Array.isArray(children) ? children : [children])
-            .filter(Boolean)
-            .forEach(c => node.appendChild(typeof c === 'string' ? document.createTextNode(c) : c));
-        return node;
-    }
-
-    /** Parse une chaîne SVG (constante interne du fichier, jamais une donnée
-     *  externe) en nœud DOM réel, sans passer par innerHTML. */
-    function svgNode(markup) {
-        const doc = new DOMParser().parseFromString(markup, 'image/svg+xml');
-        const svg = doc.documentElement;
-        return svg && svg.nodeName === 'svg' ? document.importNode(svg, true) : null;
-    }
-
-    /** Rendu de texte enrichi : seuls <strong> et <em> sont reconnus, et ils
-     *  sont recréés via createElement. Toute autre balise présente dans la
-     *  donnée est traitée comme du texte littéral et affichée telle quelle.
-     *  Aucune chaîne n'est jamais interprétée comme du HTML. */
-    function renderRichText(target, raw) {
-        target.textContent = '';
-        const re = /<(strong|em)>([\s\S]*?)<\/\1>/gi;
-        let last = 0, m;
-        while ((m = re.exec(raw)) !== null) {
-            if (m.index > last) {
-                target.appendChild(document.createTextNode(raw.slice(last, m.index)));
-            }
-            target.appendChild(el(m[1].toLowerCase(), { text: m[2] }));
-            last = re.lastIndex;
-        }
-        if (last < raw.length) {
-            target.appendChild(document.createTextNode(raw.slice(last)));
-        }
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       1. INJECTION DES TEXTES SIMPLES (data-text-id)
-       ────────────────────────────────────────────────────────────────── */
-    function injectTexts() {
-        const map = {
-            'hero-name':        data.identity.fullName,
-            'hero-pseudo':      data.identity.pseudo,
-            'hero-baseline':    data.identity.baseline,
-            'contact-intro':    data.identity.contactIntro
+    /* ── Menu mobile ─────────────────────────────────────────────── */
+    var toggle = $('.nav-toggle');
+    var menu = $('#nav-menu');
+    if (toggle && menu) {
+        var setOpen = function (open) {
+            toggle.setAttribute('aria-expanded', String(open));
+            menu.classList.toggle('open', open);
         };
-        for (const [id, value] of Object.entries(map)) {
-            const target = $(`[data-text-id="${id}"]`);
-            if (target) target.textContent = value;
-        }
-        // Description : peut contenir <strong>/<em> pour la mise en valeur.
-        // On ne l'injecte PAS en innerHTML — on reconstruit les nœuds à la main.
-        const desc = $('[data-text-id="hero-description"]');
-        if (desc) renderRichText(desc, data.identity.description);
+        toggle.addEventListener('click', function () {
+            setOpen(toggle.getAttribute('aria-expanded') !== 'true');
+        });
+        $$('a', menu).forEach(function (a) {
+            a.addEventListener('click', function () { setOpen(false); });
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') setOpen(false);
+        });
     }
 
+    /* ── Thème clair / sombre ────────────────────────────────────── */
+    var themeBtn = $('#theme-toggle');
+    if (themeBtn) {
+        themeBtn.addEventListener('click', function () {
+            var root = document.documentElement;
+            var current = root.getAttribute('data-theme') ||
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            var next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            try { window.localStorage.setItem('theme', next); } catch (e) { /* ignoré */ }
+        });
+    }
 
-    /* ──────────────────────────────────────────────────────────────────
-       2. CTA HERO : génère les boutons CV / GitHub / LinkedIn
-       ────────────────────────────────────────────────────────────────── */
-    function buildHeroCTA() {
-        const container = $('#hero-cta');
-        if (!container) return;
-
-        // Icônes (SVG inline — Lucide-style)
-        const icons = {
-            download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>',
-            github:   '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>',
-            linkedin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-4 0v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>'
+    /* ── Onglets accessibles (compétences) ───────────────────────── */
+    $$('[data-tabs]').forEach(function (wrap) {
+        var tabs = $$('[role="tab"]', wrap);
+        var select = function (tab, focus) {
+            tabs.forEach(function (t) {
+                var on = t === tab;
+                t.setAttribute('aria-selected', String(on));
+                t.tabIndex = on ? 0 : -1;
+                var panel = document.getElementById(t.getAttribute('aria-controls'));
+                if (panel) panel.hidden = !on;
+            });
+            if (focus) tab.focus();
         };
-
-        // Bouton CV (uniquement si activé)
-        if (data.cta.cv.enabled) {
-            container.appendChild(el('a', {
-                class: 'btn btn-primary',
-                href: data.cta.cv.href,
-                download: '',
-                'aria-label': 'Télécharger le CV en PDF'
-            }, [
-                svgNode(icons.download),
-                el('span', { text: data.cta.cv.label })
-            ]));
-        }
-        // GitHub
-        if (data.cta.github.enabled) {
-            container.appendChild(el('a', {
-                class: data.cta.cv.enabled ? 'btn btn-secondary' : 'btn btn-primary',
-                href: data.contact.githubUrl,
-                target: '_blank',
-                rel: 'noopener noreferrer',
-                'aria-label': 'Voir mon profil GitHub'
-            }, [
-                svgNode(icons.github),
-                el('span', { text: data.cta.github.label })
-            ]));
-        }
-        // LinkedIn
-        if (data.cta.linkedin.enabled) {
-            container.appendChild(el('a', {
-                class: 'btn btn-secondary',
-                href: data.contact.linkedinUrl,
-                target: '_blank',
-                rel: 'noopener noreferrer',
-                'aria-label': 'Voir mon profil LinkedIn'
-            }, [
-                svgNode(icons.linkedin),
-                el('span', { text: data.cta.linkedin.label })
-            ]));
-        }
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       3. SECTION COMPÉTENCES
-       ────────────────────────────────────────────────────────────────── */
-    function buildSkills() {
-        const container = $('#skills-grid');
-        if (!container) return;
-
-        data.skills.forEach(group => {
-            const card = el('div', { class: 'skill-card fade-in' });
-
-            const header = el('div', { class: 'skill-card-header' }, [
-                el('span', { class: 'skill-card-dot', 'aria-hidden': 'true' }),
-                el('span', { class: 'skill-card-title', text: group.category })
-            ]);
-
-            const list = el('div', { class: 'skill-list' });
-            group.items.forEach(item => {
-                list.appendChild(el('div', { class: 'skill-row' }, [
-                    el('span', { class: 'skill-name', text: item.name }),
-                    el('span', { class: 'skill-level', text: item.level })
-                ]));
+        tabs.forEach(function (tab, i) {
+            tab.addEventListener('click', function () { select(tab, false); });
+            tab.addEventListener('keydown', function (e) {
+                var idx = null;
+                if (e.key === 'ArrowRight') idx = (i + 1) % tabs.length;
+                else if (e.key === 'ArrowLeft') idx = (i - 1 + tabs.length) % tabs.length;
+                else if (e.key === 'Home') idx = 0;
+                else if (e.key === 'End') idx = tabs.length - 1;
+                if (idx !== null) { e.preventDefault(); select(tabs[idx], true); }
             });
-
-            card.appendChild(header);
-            card.appendChild(list);
-            container.appendChild(card);
         });
-    }
+        select(tabs[0], false);
+    });
 
+    /* ── Filtres (projets, expérience) ───────────────────────────── */
+    $$('[data-filter]').forEach(function (group) {
+        var target = document.getElementById(group.getAttribute('data-filter') === 'projects' ? 'projects' : 'timeline');
+        if (!target) return;
+        var items = $$('[data-type]', target);
+        var buttons = $$('button', group);
+        buttons.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var value = btn.getAttribute('data-value');
+                buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+                items.forEach(function (item) {
+                    item.hidden = !(value === 'all' || item.getAttribute('data-type') === value);
+                });
+            });
+        });
+    });
 
-    /* ──────────────────────────────────────────────────────────────────
-       4. SECTION PROJETS
-       ────────────────────────────────────────────────────────────────── */
-    function buildProjects() {
-        const container = $('#projects-list');
-        if (!container) return;
+    /* ── Email anti-scraping ─────────────────────────────────────── */
+    var reveal = $('#email-reveal');
+    var copyBtn = $('#email-copy');
+    var slot = $('#email-value');
+    var EMAIL_RE = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
-        data.projects.forEach(project => {
-            // Si une URL est fournie, la carte est un <a>, sinon un <article>
-            const tag = project.url ? 'a' : 'article';
-            const attrs = { class: 'project-card fade-in' };
-            if (project.url) {
-                attrs.href = project.url;
-                attrs.target = '_blank';
-                attrs.rel = 'noopener noreferrer';
-                attrs['aria-label'] = `Projet : ${project.title} (ouvre dans un nouvel onglet)`;
+    var decode = function (b64) {
+        try { return window.atob(b64); } catch (e) { return ''; }
+    };
+
+    if (reveal && slot) {
+        reveal.addEventListener('click', function () {
+            var email = decode(reveal.getAttribute('data-u')) + '@' + decode(reveal.getAttribute('data-d'));
+            if (!EMAIL_RE.test(email)) return;             // garde-fou : on n'affiche qu'une adresse valide
+            var link = document.createElement('a');
+            link.href = 'mailto:' + email;
+            link.textContent = email;
+            slot.textContent = '';
+            slot.appendChild(link);
+            reveal.hidden = true;
+            if (copyBtn) {
+                copyBtn.hidden = false;
+                copyBtn.addEventListener('click', function () {
+                    if (!navigator.clipboard) return;
+                    navigator.clipboard.writeText(email).then(function () {
+                        copyBtn.textContent = 'Copié ✓';
+                        window.setTimeout(function () { copyBtn.textContent = 'Copier'; }, 2000);
+                    }, function () { /* refusé : l'adresse reste visible */ });
+                });
             }
-            const card = el(tag, attrs);
-
-            const header = el('div', { class: 'project-header' }, [
-                el('h3', { class: 'project-title', text: project.title }),
-                el('span', { class: 'project-year', text: project.year })
-            ]);
-
-            const desc = el('p', { class: 'project-description', text: project.description });
-
-            const tags = el('div', { class: 'project-tags' });
-            project.tags.forEach(t => {
-                tags.appendChild(el('span', { class: 'project-tag', text: t }));
-            });
-
-            card.appendChild(header);
-            card.appendChild(desc);
-            card.appendChild(tags);
-            container.appendChild(card);
         });
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       5. SECTION CERTIFICATIONS
-       ────────────────────────────────────────────────────────────────── */
-    function buildCertifications() {
-        const container = $('#certs-grid');
-        if (!container) return;
-
-        data.certifications.forEach(cert => {
-            const isObtained = cert.status === 'obtained';
-            const card = el('div', {
-                class: `cert-card fade-in ${isObtained ? 'is-obtained' : 'is-pending'}`
-            });
-
-            card.appendChild(el('div', {
-                class: `cert-status ${isObtained ? 'is-obtained' : 'is-pending'}`,
-                text: isObtained ? '[ OBTENUE ]' : '[ EN COURS / À VENIR ]'
-            }));
-            card.appendChild(el('div', { class: 'cert-title', text: cert.title }));
-            card.appendChild(el('div', { class: 'cert-meta', text: cert.meta }));
-
-            container.appendChild(card);
-        });
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       6. TIMELINE
-       ────────────────────────────────────────────────────────────────── */
-    function buildTimeline() {
-        const container = $('#timeline');
-        if (!container) return;
-
-        data.timeline.forEach(item => {
-            const li = el('li', {
-                class: `timeline-item fade-in ${item.state === 'past' ? 'is-past' : ''}`
-            });
-
-            const header = el('div', { class: 'timeline-header' }, [
-                el('h3', { class: 'timeline-title', text: item.title }),
-                el('span', { class: 'timeline-period', text: item.period })
-            ]);
-
-            const desc = el('p', { class: 'timeline-description', text: item.description });
-
-            li.appendChild(header);
-            li.appendChild(desc);
-            container.appendChild(li);
-        });
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       7. CONTACT — assemblage de l'email + actions
-       OPSEC : l'email n'est jamais présent en clair dans le HTML statique.
-       ────────────────────────────────────────────────────────────────── */
-    function setupContact() {
-        const email = `${data.contact.emailLocal}@${data.contact.emailDomain}`;
-        const display = $('#email-display');
-        const copyBtn = $('#email-copy');
-        if (display) display.textContent = email;
-
-        // Bouton "copier"
-        if (copyBtn) {
-            copyBtn.addEventListener('click', async () => {
-                try {
-                    await navigator.clipboard.writeText(email);
-                    copyBtn.textContent = '✓ copié';
-                    copyBtn.classList.add('is-copied');
-                    setTimeout(() => {
-                        copyBtn.textContent = 'copier';
-                        copyBtn.classList.remove('is-copied');
-                    }, 2200);
-                } catch (e) {
-                    // Fallback : ouvre le client mail si le presse-papier est bloqué
-                    window.location.href = 'mailto:' + email;
-                }
-            });
-        }
-
-        // Liens LinkedIn / GitHub
-        const linkedin = $('#link-linkedin');
-        if (linkedin) {
-            linkedin.href = data.contact.linkedinUrl;
-            linkedin.textContent = data.contact.linkedinLabel;
-        }
-        const github = $('#link-github');
-        if (github) {
-            github.href = data.contact.githubUrl;
-            github.textContent = data.contact.githubLabel;
-        }
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       8. MENU MOBILE (hamburger)
-       ────────────────────────────────────────────────────────────────── */
-    function setupMobileMenu() {
-        const toggle = $('.nav-toggle');
-        const menu = $('#nav-menu');
-        if (!toggle || !menu) return;
-
-        toggle.addEventListener('click', () => {
-            const isOpen = menu.classList.toggle('is-open');
-            toggle.setAttribute('aria-expanded', String(isOpen));
-            toggle.setAttribute('aria-label', isOpen ? 'Fermer le menu' : 'Ouvrir le menu');
-        });
-
-        // Ferme le menu après clic sur un lien
-        $$('.nav-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                menu.classList.remove('is-open');
-                toggle.setAttribute('aria-expanded', 'false');
-            });
-        });
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       9. ANIMATIONS D'APPARITION (IntersectionObserver)
-       Ne s'active que sur les éléments .fade-in
-       Désactivée si l'utilisateur préfère "reduced motion" (déjà géré en CSS)
-       ────────────────────────────────────────────────────────────────── */
-    function setupScrollReveal() {
-        const elements = $$('.fade-in');
-        if (!elements.length || !('IntersectionObserver' in window)) {
-            // Pas de support : on affiche tout immédiatement
-            elements.forEach(el => el.classList.add('is-visible'));
-            return;
-        }
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-        elements.forEach(el => observer.observe(el));
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       10. ANNÉE DU FOOTER
-       ────────────────────────────────────────────────────────────────── */
-    function setFooterYear() {
-        const span = $('#footer-year');
-        if (span) span.textContent = String(new Date().getFullYear());
-    }
-
-
-    /* ──────────────────────────────────────────────────────────────────
-       INITIALISATION
-       ────────────────────────────────────────────────────────────────── */
-    function init() {
-        injectTexts();
-        buildHeroCTA();
-        buildSkills();
-        buildProjects();
-        buildCertifications();
-        buildTimeline();
-        setupContact();
-        setupMobileMenu();
-        setupScrollReveal();
-        setFooterYear();
-    }
-
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-    } else {
-        init();
     }
 })();

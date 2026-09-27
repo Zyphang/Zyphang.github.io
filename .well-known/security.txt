@@ -1,0 +1,8 @@
+# Politique de divulgation de vulnérabilités — zyphang.github.io
+# Tu as trouvé une faille ? Merci ! Signale-la en privé via le lien ci-dessous.
+Contact: https://github.com/Zyphang/Zyphang.github.io/security/advisories/new
+Contact: https://www.linkedin.com/in/damien-dathueyt
+Expires: 2027-09-27T00:00:00.000Z
+Preferred-Languages: fr, en
+Canonical: https://zyphang.github.io/.well-known/security.txt
+Policy: https://github.com/Zyphang/Zyphang.github.io/blob/main/SECURITY.md
