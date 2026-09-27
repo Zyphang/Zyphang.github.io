@@ -50,30 +50,30 @@ window.MISSIONS = {
             },
             {
                 type: 'choice', title: 'Espionne le Wi-Fi du café',
-                text: ['Un pirate est connecté au même Wi-Fi public que Léa. Il capture les paquets qui passent. Voici ce qu\'il voit quand Léa se connecte à un vieux site :'],
+                text: ['Un pirate est connecté au même Wi-Fi public que Marilou. Il capture les paquets qui passent. Voici ce qu\'il voit quand Marilou se connecte à un vieux site :'],
                 visual: { kind: 'packets', rows: [
-                    ['Léa', 'vieux-forum.fr', 'GET /accueil'],
-                    ['Léa', 'vieux-forum.fr', 'identifiant=lea ; motdepasse=Chaton22'],
-                    ['vieux-forum.fr', 'Léa', 'Bienvenue Léa !']
+                    ['Marilou', 'vieux-forum.fr', 'GET /accueil'],
+                    ['Marilou', 'vieux-forum.fr', 'identifiant=marilou ; motdepasse=Chaton22'],
+                    ['vieux-forum.fr', 'Marilou', 'Bienvenue Marilou !']
                 ] },
                 options: [
                     { t: 'Chaton22', ok: true, why: 'Bien vu… et c\'était beaucoup trop facile ! Ce site envoie tout en clair.' },
-                    { t: 'lea', why: 'Ça, c\'est son identifiant. Regarde juste après « motdepasse= ».' },
+                    { t: 'marilou', why: 'Ça, c\'est son identifiant. Regarde juste après « motdepasse= ».' },
                     { t: 'Impossible à savoir', why: 'Regarde bien la deuxième ligne : tout est lisible !' }
                 ],
-                question: 'Quel est le mot de passe de Léa ?'
+                question: 'Quel est le mot de passe de Marilou ?'
             },
             {
                 type: 'choice', title: 'Et avec le cadenas ?',
-                text: ['Maintenant Léa va sur un site avec un **cadenas 🔒** dans la barre d\'adresse (https). Le pirate capture ceci :'],
+                text: ['Maintenant Marilou va sur un site avec un **cadenas 🔒** dans la barre d\'adresse (https). Le pirate capture ceci :'],
                 visual: { kind: 'packets', rows: [
-                    ['Léa', 'forum-moderne.fr', '8f#Kq!2zP0x@Lw9…'],
-                    ['Léa', 'forum-moderne.fr', 'Vb7$pQ1&mZ4r^tE…'],
-                    ['forum-moderne.fr', 'Léa', 'J2n!X0q#8sLp%aY…']
+                    ['Marilou', 'forum-moderne.fr', '8f#Kq!2zP0x@Lw9…'],
+                    ['Marilou', 'forum-moderne.fr', 'Vb7$pQ1&mZ4r^tE…'],
+                    ['forum-moderne.fr', 'Marilou', 'J2n!X0q#8sLp%aY…']
                 ] },
                 question: 'Pourquoi le pirate ne peut plus rien lire ?',
                 options: [
-                    { t: '🔒 Les données sont chiffrées', ok: true, why: 'Oui ! Avec HTTPS, les paquets sont chiffrés : seuls Léa et le site peuvent les lire.' },
+                    { t: '🔒 Les données sont chiffrées', ok: true, why: 'Oui ! Avec HTTPS, les paquets sont chiffrés : seuls Marilou et le site peuvent les lire.' },
                     { t: '📴 Le Wi-Fi est tombé en panne', why: 'Non, les paquets passent bien… mais ils sont devenus illisibles. Pourquoi ?' },
                     { t: '🐢 Le site est trop lent', why: 'La vitesse n\'y est pour rien. Pense au cadenas.' }
                 ],
@@ -152,29 +152,29 @@ window.MISSIONS = {
                 type: 'info', title: 'Enquêter avec ce qui est public',
                 text: ['L\'**OSINT**, c\'est enquêter uniquement avec des informations publiques : réseaux sociaux, sites, photos…',
                        'Les enquêteurs s\'en servent pour résoudre des affaires. Les pirates aussi, pour deviner des mots de passe !',
-                       'Voici le profil public de **Léo**, 17 ans (personnage inventé).'],
+                       'Voici le profil public de **Simon**, 19 ans (personnage inventé).'],
                 word: { term: 'OSINT', def: 'Open Source Intelligence : le renseignement à partir de sources ouvertes, accessibles à tous.' }
             },
             {
                 type: 'choice', title: 'La question secrète',
-                text: ['Sur un site, Léo a choisi la question secrète : « Quel est le nom de ton premier animal ? »'],
-                visual: { kind: 'posts', ref: 'leo' },
-                question: 'Quelle est la réponse de Léo ?',
+                text: ['Sur un site, Simon a choisi la question secrète : « Quel est le nom de ton premier animal ? »'],
+                visual: { kind: 'posts', ref: 'simon' },
+                question: 'Quelle est la réponse de Simon ?',
                 options: [
-                    { t: 'Biscuit', ok: true, why: 'Trouvé ! Il suffisait de lire ses publications…' },
-                    { t: 'Aigle', why: 'Relis les publications : l\'une d\'elles parle d\'un chien.' },
+                    { t: 'Sanka', ok: true, why: 'Trouvé ! Il suffisait de lire ses publications…' },
+                    { t: 'Aigle', why: 'Relis les publications : l\'une d\'elles parle d\'un chat.' },
                     { t: 'Pesto', why: 'Ça, c\'est la sauce de ses pâtes 😄 Cherche un animal.' }
                 ]
             },
             {
                 type: 'choice', title: 'Deviner le mot de passe',
-                text: ['Comme beaucoup de gens, Léo utilise **le nom de son chien + son année de naissance**.'],
-                visual: { kind: 'posts', ref: 'leo' },
+                text: ['Comme beaucoup de gens, Simon utilise **le nom de son chat + son année de naissance**.'],
+                visual: { kind: 'posts', ref: 'simon' },
                 question: 'Quel est son mot de passe probable ? (On est en 2026.)',
                 options: [
-                    { t: 'Biscuit2009', ok: true, why: 'Exact : 17 ans en 2026, né en 2009. Son mot de passe tient en deux publications !' },
-                    { t: 'Biscuit2012', why: 'Presque ! Il a eu 17 ans cette année : 2026 − 17 = ?' },
-                    { t: 'Lycee2026', why: 'Non, relis l\'indice : le chien + l\'année de naissance.' }
+                    { t: 'Sanka2007', ok: true, why: 'Exact : 19 ans en 2026, né en 2007. Son mot de passe tient en deux publications !' },
+                    { t: 'Sanka2012', why: 'Presque ! Il a eu 19 ans cette année : 2026 − 19 = ?' },
+                    { t: 'Fac2026', why: 'Non, relis l\'indice : le chat + l\'année de naissance.' }
                 ]
             },
             {
@@ -182,17 +182,17 @@ window.MISSIONS = {
                 text: ['Touche les **3 publications** qui donnent des informations utiles à un pirate.'],
                 style: 'posts', need: 3,
                 items: [
-                    { t: '🎂 17 ans aujourd\'hui ! Merci pour tous vos messages (12 mars)', bad: true, why: 'Date de naissance : souvent utilisée dans les mots de passe et pour vérifier une identité.' },
+                    { t: '🎂 19 ans aujourd\'hui ! Merci pour tous vos messages (12 mars)', bad: true, why: 'Date de naissance : souvent utilisée dans les mots de passe et pour vérifier une identité.' },
                     { t: '🍝 Les pâtes au pesto, meilleur repas du monde', why: 'Un goût culinaire : pas vraiment utile à un pirate.' },
-                    { t: '🐶 Biscuit a encore mangé ma chaussette…', bad: true, why: 'Le nom de l\'animal : réponse classique aux questions secrètes.' },
-                    { t: '🏫 Premier jour au lycée Jean-Moulin, rentrée en Terminale !', bad: true, why: 'Le lycée et la classe : ça permet de te localiser et de se faire passer pour quelqu\'un que tu connais.' },
+                    { t: '😺 Sanka a encore mangé ma chaussette…', bad: true, why: 'Le nom de l\'animal : réponse classique aux questions secrètes.' },
+                    { t: '🏫 Premier jour à la fac Jean-Moulin, rentrée en licence !', bad: true, why: 'La fac et la formation : ça permet de te localiser et de se faire passer pour quelqu\'un que tu connais.' },
                     { t: '🌅 Trop beau ce coucher de soleil', why: 'Une jolie photo sans lieu ni nom : peu de risque.' }
                 ],
                 hint: 'Cherche une date, un nom et un lieu.'
             },
             {
-                type: 'choice', title: 'Aide Léo à se protéger',
-                text: ['Léo est un peu inquiet. Quel est le meilleur conseil ?'],
+                type: 'choice', title: 'Aide Simon à se protéger',
+                text: ['Simon est un peu inquiet. Quel est le meilleur conseil ?'],
                 options: [
                     { t: '🛡️ Compte en privé, et un mot de passe sans infos perso', ok: true, why: 'Oui ! Et astuce de pro : pour une question secrète, on peut répondre quelque chose de faux… dont on se souvient.' },
                     { t: '🚫 Supprimer tous ses réseaux sociaux', why: 'Un peu radical ! On peut garder ses réseaux en faisant attention à ce qu\'on publie.' },
@@ -325,10 +325,10 @@ window.MISSIONS = {
             {
                 type: 'choice', title: 'Le cadenas magique',
                 text: ['Aujourd\'hui, on utilise des **cadenas** que tout le monde peut fermer, mais que toi seul·e peux ouvrir avec ta clé.',
-                       'Sam veut t\'envoyer un secret par la poste, sans que personne ne puisse le lire en chemin.'],
-                question: 'Qu\'envoies-tu à Sam ?',
+                       'David veut t\'envoyer un secret par la poste, sans que personne ne puisse le lire en chemin.'],
+                question: 'Qu\'envoies-tu à David ?',
                 options: [
-                    { t: '🔓 Un cadenas ouvert (tu gardes la clé)', ok: true, why: 'Parfait ! Sam ferme la boîte avec ton cadenas, et toi seul·e peux l\'ouvrir. C\'est le principe de la clé publique et de la clé privée.' },
+                    { t: '🔓 Un cadenas ouvert (tu gardes la clé)', ok: true, why: 'Parfait ! David ferme la boîte avec ton cadenas, et toi seul·e peux l\'ouvrir. C\'est le principe de la clé publique et de la clé privée.' },
                     { t: '🔑 Ta clé', why: 'Si ta clé se perd en chemin, n\'importe qui pourra ouvrir tes boîtes !' },
                     { t: '📦 Une boîte sans cadenas', why: 'Le facteur (ou un pirate) pourrait lire le secret.' }
                 ],
@@ -346,8 +346,8 @@ window.MISSIONS = {
 
 /* Profil fictif utilisé par la mission OSINT (visual.kind = "posts") */
 window.MISSION_PROFILES = {
-    leo: {
-        name: 'Léo M.', handle: '@leo.m_09', bio: 'Terminale · Foot ⚽ · Mon chien = ma vie',
-        posts: ['🎂 17 ans aujourd\'hui ! Merci pour tous vos messages (12 mars)', '🐶 Biscuit a encore mangé ma chaussette…', '🍝 Les pâtes au pesto, meilleur repas du monde', '🏫 Premier jour au lycée Jean-Moulin, rentrée en Terminale !']
+    simon: {
+        name: 'Simon D.', handle: '@simon.d_07', bio: 'Étudiant · Foot ⚽ · Mon chat = ma vie',
+        posts: ['🎂 19 ans aujourd\'hui ! Merci pour tous vos messages (12 mars)', '😺 Sanka a encore mangé ma chaussette…', '🍝 Les pâtes au pesto, meilleur repas du monde', '🏫 Premier jour à la fac Jean-Moulin, rentrée en licence !']
     }
 };
