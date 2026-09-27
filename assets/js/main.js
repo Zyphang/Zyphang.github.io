@@ -74,9 +74,9 @@
         select(tabs[0], false);
     });
 
-    /* ── Filtres (projets, expérience) ───────────────────────────── */
-    $$('[data-filter]').forEach(function (group) {
-        var target = document.getElementById(group.getAttribute('data-filter') === 'projects' ? 'projects' : 'timeline');
+    /* ── Filtre de l'expérience ──────────────────────────────────── */
+    $$('[data-filter="timeline"]').forEach(function (group) {
+        var target = document.getElementById('timeline');
         if (!target) return;
         var items = $$('[data-type]', target);
         var buttons = $$('button', group);
@@ -90,6 +90,95 @@
             });
         });
     });
+
+    /* ── Projets : filtre par type + recherche par titre ou tag ──── */
+    (function () {
+        var grid = document.getElementById('projects');
+        var group = $('[data-filter="projects"]');
+        var input = $('#project-search');
+        var status = $('#project-status');
+        var empty = $('#project-empty');
+        if (!grid) return;
+
+        // Minuscules et sans accents : « Réseau » est trouvé en tapant « reseau »
+        var norm = function (str) {
+            return String(str).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/\s+/g, ' ').trim();
+        };
+
+        var cards = $$('.project', grid).map(function (card) {
+            var title = $('.card-title', card);
+            var tags = $$('.tags li', card).map(function (li) { return li.textContent; });
+            return {
+                el: card,
+                type: card.getAttribute('data-type'),
+                text: norm((title ? title.textContent : '') + ' ' + tags.join(' ')),
+                tagEls: $$('.tags li', card)
+            };
+        });
+        var type = 'all';
+        var total = cards.length;
+
+        function apply() {
+            var q = input ? norm(input.value) : '';
+            var words = q ? q.split(' ') : [];
+            var shown = 0;
+            cards.forEach(function (c) {
+                var ok = (type === 'all' || c.type === type) &&
+                         words.every(function (w) { return c.text.indexOf(w) !== -1; });
+                c.el.hidden = !ok;
+                if (ok) shown++;
+                c.tagEls.forEach(function (li) { li.classList.toggle('is-active', q !== '' && norm(li.textContent) === q); });
+            });
+            if (status) status.textContent = (q || type !== 'all') ? shown + ' projet' + (shown > 1 ? 's' : '') + ' sur ' + total : '';
+            if (empty) empty.hidden = shown !== 0;
+        }
+
+        if (group) {
+            var buttons = $$('button', group);
+            buttons.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    type = btn.getAttribute('data-value');
+                    buttons.forEach(function (b) { b.setAttribute('aria-pressed', String(b === btn)); });
+                    apply();
+                });
+            });
+        }
+
+        if (input) {
+            input.addEventListener('input', apply);
+            input.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') { input.value = ''; apply(); }
+            });
+        }
+
+        // Cliquer sur un tag d'une carte = rechercher ce tag
+        cards.forEach(function (c) {
+            c.tagEls.forEach(function (li) {
+                li.tabIndex = 0;
+                li.setAttribute('role', 'button');
+                li.setAttribute('title', 'Voir les projets « ' + li.textContent + ' »');
+                var pick = function () {
+                    if (!input) return;
+                    var same = norm(input.value) === norm(li.textContent);
+                    input.value = same ? '' : li.textContent;   // re-cliquer sur le tag annule
+                    apply();
+                };
+                li.addEventListener('click', pick);
+                li.addEventListener('keydown', function (e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(); }
+                });
+            });
+        });
+
+        var clearBtn = $('#project-clear');
+        if (clearBtn) clearBtn.addEventListener('click', function () {
+            if (input) input.value = '';
+            type = 'all';
+            if (group) $$('button', group).forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-value') === 'all')); });
+            apply();
+            if (input) input.focus();
+        });
+    })();
 
     /* ── Email anti-scraping ─────────────────────────────────────── */
     var reveal = $('#email-reveal');

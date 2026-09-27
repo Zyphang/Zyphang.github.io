@@ -225,11 +225,19 @@
             <h2 id="projects-title" class="section-title">Projets</h2>
             <p class="section-intro">Projets de cours et réalisations mises en production.</p>
 
-            <div class="filters" data-filter="projects" role="group" aria-label="Filtrer les projets">
-                <button type="button" data-value="all" aria-pressed="true">Tous</button>
-                <button type="button" data-value="cours" aria-pressed="false">Cours</button>
-                <button type="button" data-value="prod" aria-pressed="false">En prod</button>
+            <div class="project-tools">
+                <div class="filters" data-filter="projects" role="group" aria-label="Filtrer les projets">
+                    <button type="button" data-value="all" aria-pressed="true">Tous</button>
+                    <button type="button" data-value="cours" aria-pressed="false">Cours</button>
+                    <button type="button" data-value="prod" aria-pressed="false">En prod</button>
+                </div>
+                <div class="search">
+                    <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                    <label for="project-search" class="sr-only">Rechercher un projet par titre ou par tag</label>
+                    <input id="project-search" type="search" placeholder="Rechercher : titre ou tag (ex. Wazuh)" autocomplete="off" spellcheck="false" maxlength="60">
+                </div>
             </div>
+            <p class="search-status" id="project-status" aria-live="polite"></p>
 
             <div class="grid-3" id="projects">
                 <!-- NOUVEAU PROJET : ne pas supprimer ce repère (utilisé par tools/nouveau-projet.sh) -->
@@ -324,6 +332,10 @@
                     <p>Pendant mon stage, mise en place d'automatisations utilisées au quotidien, par exemple l'extraction de tous les messages Discord d'un jeu vers une base de données Notion. Des tâches d'une demi-journée ramenées à une heure maximum.</p>
                     <ul class="tags"><li>Automatisation</li><li>Agents IA</li><li>MCP</li><li>Notion</li></ul>
                 </article>
+            </div>
+            <div class="search-empty" id="project-empty" hidden>
+                <p>Aucun projet ne correspond à ta recherche.</p>
+                <button class="btn btn-small btn-ghost" type="button" id="project-clear">Tout afficher</button>
             </div>
         </div>
     </section>
