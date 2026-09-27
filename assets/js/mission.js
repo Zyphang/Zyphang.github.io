@@ -227,7 +227,7 @@
                     b.classList.add('is-found');
                     counter.textContent = 'Trouvées : ' + found + ' / ' + step.need;
                     if (found === step.need) {
-                        feedback(fb, 'good', it.why + ' — Tu as tout trouvé, bravo !');
+                        feedback(fb, 'good', it.why + ' Tu as tout trouvé, bravo !');
                         list.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
                         onSolved();
                     } else feedback(fb, 'good', it.why);

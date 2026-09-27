@@ -30,6 +30,14 @@
         });
     }
 
+    /* QR code : agrandi au clic, refermé au clic n'importe où ou avec Échap */
+    var qrOpen = document.getElementById('qr-open');
+    var qrDialog = document.getElementById('qr-dialog');
+    if (qrOpen && qrDialog && typeof qrDialog.showModal === 'function') {
+        qrOpen.addEventListener('click', function () { qrDialog.showModal(); });
+        qrDialog.addEventListener('click', function () { qrDialog.close(); });
+    }
+
     /* Accueil de l'atelier : marquer les missions terminées */
     function markCards() {
         var got = badges();

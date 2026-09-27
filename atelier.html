@@ -52,9 +52,16 @@
             </p>
         </div>
         <figure class="qr">
-            <img src="assets/img/qr-cyberfolio.svg" width="120" height="120" alt="QR code vers zyphang.github.io">
-            <figcaption>Rejoue chez toi<br><strong>zyphang.github.io</strong></figcaption>
+            <button class="qr-zoom" type="button" id="qr-open" aria-label="Agrandir le QR code">
+                <img src="assets/img/qr-cyberfolio.svg" width="120" height="120" alt="QR code vers zyphang.github.io">
+            </button>
+            <figcaption>Rejoue chez toi<br><strong>zyphang.github.io</strong><br><span class="muted">Touche pour agrandir</span></figcaption>
         </figure>
+        <dialog class="qr-dialog" id="qr-dialog" aria-label="QR code agrandi">
+            <img src="assets/img/qr-cyberfolio.svg" width="480" height="480" alt="QR code vers zyphang.github.io">
+            <p>zyphang.github.io</p>
+            <button class="btn" type="button" id="qr-close">Fermer</button>
+        </dialog>
     </div>
 
     <div class="hub-bar">

@@ -393,3 +393,48 @@ html:not(.js) #email-reveal { display: none; }
     [role="tabpanel"][hidden] { display: block !important; }
     .section { padding: 24px 0; }
 }
+
+/* ── Expériences dépliables ───────────────────────────────────────── */
+.tl-item { padding: 0; }
+.tl-details > summary {
+    list-style: none; cursor: pointer; display: grid; gap: .5rem;
+    padding: 1.1rem 1.25rem; border-radius: var(--radius);
+}
+.tl-details > summary::-webkit-details-marker { display: none; }
+.tl-details > summary:hover .tl-title { color: var(--accent); }
+.tl-details > summary p { color: var(--text-muted); font-size: .94rem; margin: 0; }
+.tl-more { font-size: .85rem; font-weight: 600; color: var(--accent); display: inline-flex; align-items: center; gap: .35rem; }
+.tl-more::after { content: "▾"; transition: transform .2s; }
+.tl-details[open] .tl-more { font-size: 0; }
+.tl-details[open] .tl-more::before { content: "Masquer le détail"; font-size: .85rem; }
+.tl-details[open] .tl-more::after { transform: rotate(180deg); font-size: .85rem; }
+.tl-body { padding: 0 1.25rem 1.2rem; display: grid; gap: .6rem; border-top: 1px solid var(--border); margin: 0 1.25rem; padding: .9rem 0 1.2rem; }
+.tl-body-title { margin: 0; font-size: .8rem; font: 600 .78rem var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+.tl-missions { display: grid; gap: .4rem; }
+.tl-missions li { position: relative; padding-left: 1.2rem; font-size: .94rem; }
+.tl-missions li::before { content: "→"; position: absolute; left: 0; color: var(--accent); }
+.tl-missions li.todo { background: none; padding-left: 1.2rem; }
+.tl-skills { margin: 0; font-size: .9rem; color: var(--text-muted); }
+.tl-skills strong { color: var(--text); }
+
+/* ── Liste de l'atelier : liens vers les missions ─────────────────── */
+.atelier-list li { padding: 0; }
+.atelier-list a {
+    display: flex; align-items: center; gap: .85rem; width: 100%; padding: .9rem 1rem;
+    color: var(--text); text-decoration: none; border-radius: var(--radius);
+}
+.atelier-list li:has(a:hover) { border-color: var(--accent); }
+.atelier-list a:hover { color: var(--text); }
+.atelier-go { margin-left: auto; color: var(--accent); transition: transform .15s; }
+.atelier-list a:hover .atelier-go { transform: translateX(3px); }
+
+/* ── QR code agrandissable ────────────────────────────────────────── */
+.qr-zoom { padding: 0; border: 0; background: none; cursor: zoom-in; border-radius: 6px; }
+.qr-dialog {
+    border: 0; border-radius: 20px; padding: 1.5rem; background: #fff; color: #111;
+    max-width: min(92vw, 560px); text-align: center;
+}
+.qr-dialog::backdrop { background: rgba(0, 0, 0, .7); }
+.qr-dialog img { display: block; width: min(80vw, 480px); height: auto; margin: 0 auto 1rem; }
+.qr-dialog p { margin: 0 0 1rem; font: 600 1.2rem var(--mono); }
+.qr-dialog .btn { cursor: pointer; }
