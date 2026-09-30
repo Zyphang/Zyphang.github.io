@@ -156,8 +156,9 @@ html:not(.js) .theme-toggle { display: none; }
     flex-direction: column; align-items: center; justify-content: center; gap: 5px;
 }
 .nav-toggle .bar { display: block; width: 18px; height: 2px; background: var(--text); border-radius: 2px; transition: transform .2s; }
-.nav-toggle[aria-expanded="true"] .bar:first-of-type { transform: translateY(3.5px) rotate(45deg); }
-.nav-toggle[aria-expanded="true"] .bar:last-of-type { transform: translateY(-3.5px) rotate(-45deg); }
+/* nth-of-type ne marche pas ici (le <span> .sr-only est aussi un span) : on cible les barres par position */
+.nav-toggle[aria-expanded="true"] .bar:nth-child(2) { transform: translateY(3.5px) rotate(45deg); }
+.nav-toggle[aria-expanded="true"] .bar:nth-child(3) { transform: translateY(-3.5px) rotate(-45deg); }
 
 @media (max-width: 900px) {
     html.js .nav-toggle { display: flex; }
@@ -199,12 +200,16 @@ html:not(.js) .theme-toggle { display: none; }
 /* ── Hero / Profil ────────────────────────────────────────────────── */
 .hero { padding-top: 64px; }
 .status {
-    display: inline-flex; align-items: center; gap: .5rem; flex-wrap: wrap;
-    padding: .3rem .75rem; margin-bottom: 1.5rem;
+    display: inline-flex; align-items: center; gap: .6rem;
+    padding: .35rem .85rem; margin-bottom: 1.5rem;
     background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
-    font-size: .85rem; color: var(--text-muted);
+    font-size: .85rem; line-height: 1.45; color: var(--text-muted);
 }
-.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+.status-dot { flex: none; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 0 3px var(--ok-soft); }
+@media (max-width: 560px) {
+    .status { display: flex; align-items: flex-start; border-radius: 14px; padding: .6rem .85rem; }
+    .status-dot { margin-top: .4em; }
+}
 .hero-title { font-size: clamp(2.2rem, 6vw, 3.5rem); letter-spacing: -.025em; }
 .hero-role { font-size: 1.15rem; margin: .5rem 0 1rem; font-weight: 500; }
 .hero-lead { font-size: 1.1rem; color: var(--text-muted); max-width: 58ch; margin-bottom: 1.75rem; }
