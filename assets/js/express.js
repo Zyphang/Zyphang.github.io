@@ -199,7 +199,10 @@
         $('phish-next').focus();
     }
 
-    function resetPhish() { phishIdx = 0; phishScore = 0; renderPhish(); }
+    function shuffleMessages() {            // ordre des messages différent à chaque partie
+        for (var i = MESSAGES.length - 1; i > 0; i--) { var j = randInt(i + 1); var t = MESSAGES[i]; MESSAGES[i] = MESSAGES[j]; MESSAGES[j] = t; }
+    }
+    function resetPhish() { shuffleMessages(); phishIdx = 0; phishScore = 0; renderPhish(); }
 
     if ($('phish-card')) {
         Array.prototype.forEach.call(document.querySelectorAll('#phish-choice [data-answer]'), function (b) {

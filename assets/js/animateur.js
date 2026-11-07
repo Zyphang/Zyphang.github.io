@@ -21,6 +21,10 @@
             case 'spot':   return step.items.filter(function (i) { return i.bad; }).map(function (i) { return i.t; }).join(' | ');
             case 'tries':  return (step.attempts.filter(function (a) { return a.ok; })[0] || {}).label || '';
             case 'caesar': return step.message + ' (décalage aléatoire à chaque partie)';
+            case 'assign': return step.items.map(function (i) { return i.t + ' → ' + i.zone; }).join(' | ');
+            case 'rules':  return 'À cocher : ' + step.items.filter(function (i) { return i.ok; }).map(function (i) { return i.t; }).join(' | ');
+            case 'sqli':   return step.prepared ? 'Toute tentative avec une apostrophe échoue (requête préparée)' : "Identifiant : admin' --  (mot de passe au choix), ou ' OR '1'='1 dans le mot de passe";
+            case 'crack':  return step.salted ? 'Aucun mot de passe ne tombe : c\'est le but' : 'Cliquer sur « Lancer l\'attaque » : admin, marilou, simon et nora tombent';
             default:       return '— (explication)';
         }
     }
@@ -28,7 +32,7 @@
     Object.keys(MISSIONS).forEach(function (id) {
         var m = MISSIONS[id];
         var card = el('section', 'card anim-card');
-        var h = el('h2', 'card-title', m.icon + '  Mission ' + m.n + ' — ' + m.title);
+        var h = el('h2', 'card-title', m.icon + '  ' + (m.level === 2 ? 'Deuxième cordée · ' : 'Premiers pas · ') + 'Mission ' + m.n + ' — ' + m.title);
         card.appendChild(h);
         card.appendChild(el('p', 'muted', m.theme + ' · ≈ ' + m.duration + ' · badge « ' + m.badge + ' »'));
 

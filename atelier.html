@@ -47,8 +47,7 @@
             <p class="eyebrow">Bienvenue !</p>
             <h1 class="atelier-title">Choisis ta mission</h1>
             <p class="section-intro">
-                Aucune connaissance nécessaire. Chaque mission dure environ 5 minutes, se joue seul·e,
-                et chaque erreur te donne un indice : impossible de rater&nbsp;!
+                Choisis ton niveau, joue seul·e ou en équipe.
             </p>
         </div>
         <figure class="qr">
@@ -64,59 +63,101 @@
         </dialog>
     </div>
 
-    <div class="hub-bar">
-        <p class="badge-total">Badges obtenus : <strong id="badge-count">0</strong> / 5</p>
-        <button class="btn btn-small btn-ghost" type="button" id="reset-badges">Nouveau joueur</button>
-    </div>
-
-    <div class="hub-grid">
-        <a class="hub-card" href="mission.html?m=reseau" data-mission-card="reseau">
-            <span class="mission-icon" aria-hidden="true">🌐</span>
-            <h2>Le voyage d'un message</h2>
-            <p>Que se passe-t-il quand tu ouvres un site ? Espionne le Wi-Fi d'un café.</p>
-            <span class="hub-meta"><span class="badge">Réseau</span><span class="badge">≈ 4 min</span></span>
-        </a>
-        <a class="hub-card" href="mission.html?m=devsecops" data-mission-card="devsecops">
-            <span class="mission-icon" aria-hidden="true">⚙️</span>
-            <h2>L'usine à applis</h2>
-            <p>Trouve les erreurs cachées dans le code d'une appli avant sa mise en ligne.</p>
-            <span class="hub-meta"><span class="badge">DevSecOps</span><span class="badge">≈ 4 min</span></span>
-        </a>
-        <a class="hub-card" href="mission.html?m=osint" data-mission-card="osint">
-            <span class="mission-icon" aria-hidden="true">🔍</span>
-            <h2>Le détective d'Internet</h2>
-            <p>Devine le mot de passe de Simon rien qu'en lisant ses publications.</p>
-            <span class="hub-meta"><span class="badge">OSINT</span><span class="badge">≈ 5 min</span></span>
-        </a>
-        <a class="hub-card" href="mission.html?m=pentest" data-mission-card="pentest">
-            <span class="mission-icon" aria-hidden="true">🎯</span>
-            <h2>Le cambrioleur autorisé</h2>
-            <p>Teste la sécurité d'une boutique en ligne… avec la permission.</p>
-            <span class="hub-meta"><span class="badge">Pentest</span><span class="badge">≈ 5 min</span></span>
-        </a>
-        <a class="hub-card" href="mission.html?m=crypto" data-mission-card="crypto">
-            <span class="mission-icon" aria-hidden="true">🔐</span>
-            <h2>Messages secrets</h2>
-            <p>Casse le code de Jules César, puis découvre les cadenas d'aujourd'hui.</p>
-            <span class="hub-meta"><span class="badge">Cryptographie</span><span class="badge">≈ 5 min</span></span>
-        </a>
-        <a class="hub-card" href="express.html">
-            <span class="mission-icon" aria-hidden="true">⚡</span>
-            <h2>Parcours express</h2>
-            <p>Pas le temps ? Teste un mot de passe et repère les messages pièges.</p>
-            <span class="hub-meta"><span class="badge">Les bons réflexes</span><span class="badge">≈ 2 min</span></span>
-        </a>
-    </div>
-
-    <h2 class="hub-section-title">En équipe</h2>
-    <div class="hub-grid">
-        <div class="hub-card is-soon">
-            <span class="mission-icon" aria-hidden="true">🚨</span>
-            <h2>Cellule de crise</h2>
-            <p>Une cyberattaque frappe une entreprise. À 5, chacun son rôle : il faut décider vite, ensemble.</p>
-            <span class="hub-meta"><span class="badge">Groupe de 5</span><span class="badge">Bientôt</span></span>
+    <section class="hub-section" aria-labelledby="sec-premiers-pas">
+        <h2 class="hub-section-title" id="sec-premiers-pas">👣 Premiers pas</h2>
+        <p class="hub-section-intro">Aucune connaissance nécessaire : 5 missions courtes pour découvrir les grands métiers de la cyber. Chaque erreur te donne un indice, impossible de rater&nbsp;!</p>
+        <div class="hub-bar">
+            <p class="badge-total">Badges obtenus : <strong data-badge-count="sec-premiers-pas">0</strong> / 5</p>
+            <button class="btn btn-small btn-ghost" type="button" id="reset-badges">Nouveau joueur</button>
         </div>
-    </div>
+
+        <div class="hub-grid hub-grid-center">
+            <a class="hub-card" href="mission.html?m=reseau" data-mission-card="reseau">
+                <span class="mission-icon" aria-hidden="true">🌐</span>
+                <h3>Le voyage d'un message</h3>
+                <p>Que se passe-t-il quand tu ouvres un site ? Espionne le Wi-Fi d'un café.</p>
+                <span class="hub-meta"><span class="badge">Réseau</span><span class="badge">≈ 4 min</span></span>
+            </a>
+            <a class="hub-card" href="mission.html?m=devsecops" data-mission-card="devsecops">
+                <span class="mission-icon" aria-hidden="true">⚙️</span>
+                <h3>L'usine à applis</h3>
+                <p>Trouve les erreurs cachées dans le code d'une appli avant sa mise en ligne.</p>
+                <span class="hub-meta"><span class="badge">DevSecOps</span><span class="badge">≈ 4 min</span></span>
+            </a>
+            <a class="hub-card" href="mission.html?m=osint" data-mission-card="osint">
+                <span class="mission-icon" aria-hidden="true">🔍</span>
+                <h3>Le détective d'Internet</h3>
+                <p>Devine le mot de passe de Simon rien qu'en lisant ses publications.</p>
+                <span class="hub-meta"><span class="badge">OSINT</span><span class="badge">≈ 5 min</span></span>
+            </a>
+            <a class="hub-card" href="mission.html?m=pentest" data-mission-card="pentest">
+                <span class="mission-icon" aria-hidden="true">🎯</span>
+                <h3>Le cambrioleur autorisé</h3>
+                <p>Teste la sécurité d'une boutique en ligne… avec la permission.</p>
+                <span class="hub-meta"><span class="badge">Pentest</span><span class="badge">≈ 5 min</span></span>
+            </a>
+            <a class="hub-card" href="mission.html?m=crypto" data-mission-card="crypto">
+                <span class="mission-icon" aria-hidden="true">🔐</span>
+                <h3>Messages secrets</h3>
+                <p>Casse le code de Jules César, puis découvre les cadenas d'aujourd'hui.</p>
+                <span class="hub-meta"><span class="badge">Cryptographie</span><span class="badge">≈ 5 min</span></span>
+            </a>
+        </div>
+        <a class="express-link" href="express.html">⚡ Pas le temps ? <strong>Parcours express</strong> : un mot de passe et des messages pièges, en 2 minutes →</a>
+    </section>
+
+    <section class="hub-section" aria-labelledby="sec-cordee">
+        <h2 class="hub-section-title" id="sec-cordee">🧗 Deuxième cordée</h2>
+        <p class="hub-section-intro">Tu as fini les premiers pas ? Des missions plus longues, avec de vrais outils et le vocabulaire des pros. <strong>Pas d'indice ici : bloqué·e ? Demande à l'animateur.</strong></p>
+        <div class="hub-bar">
+            <p class="badge-total">Badges obtenus : <strong data-badge-count="sec-cordee">0</strong> / 5</p>
+        </div>
+
+        <div class="hub-grid hub-grid-center">
+            <a class="hub-card hub-card-l2" href="mission.html?m=reseau2" data-mission-card="reseau2">
+                <span class="mission-icon" aria-hidden="true">🏗️</span>
+                <h3>L'architecte du réseau</h3>
+                <p>Découpe le réseau d'une boutique en zones et règle son pare-feu.</p>
+                <span class="hub-meta"><span class="badge">Réseau</span><span class="badge">≈ 10 min</span></span>
+            </a>
+            <a class="hub-card hub-card-l2" href="mission.html?m=devsecops2" data-mission-card="devsecops2">
+                <span class="mission-icon" aria-hidden="true">🚰</span>
+                <h3>Le pipeline qui fuit</h3>
+                <p>Trouve les failles dans un vrai fichier de pipeline et un Dockerfile.</p>
+                <span class="hub-meta"><span class="badge">DevSecOps</span><span class="badge">≈ 10 min</span></span>
+            </a>
+            <a class="hub-card hub-card-l2" href="mission.html?m=osint2" data-mission-card="osint2">
+                <span class="mission-icon" aria-hidden="true">🗂️</span>
+                <h3>Enquête sur une entreprise</h3>
+                <p>Prépare un test de phishing autorisé avec des infos publiques.</p>
+                <span class="hub-meta"><span class="badge">OSINT</span><span class="badge">≈ 10 min</span></span>
+            </a>
+            <a class="hub-card hub-card-l2" href="mission.html?m=pentest2" data-mission-card="pentest2">
+                <span class="mission-icon" aria-hidden="true">💉</span>
+                <h3>Injection SQL pas à pas</h3>
+                <p>Connecte-toi sans mot de passe… puis corrige la faille.</p>
+                <span class="hub-meta"><span class="badge">Pentest</span><span class="badge">≈ 10 min</span></span>
+            </a>
+            <a class="hub-card hub-card-l2" href="mission.html?m=crypto2" data-mission-card="crypto2">
+                <span class="mission-icon" aria-hidden="true">💾</span>
+                <h3>La fuite de base de données</h3>
+                <p>Casse des mots de passe qui ont fuité, puis découvre le sel.</p>
+                <span class="hub-meta"><span class="badge">Cryptographie</span><span class="badge">≈ 10 min</span></span>
+            </a>
+        </div>
+    </section>
+
+    <section class="hub-section" aria-labelledby="sec-equipe">
+        <h2 class="hub-section-title" id="sec-equipe">🤝 En équipe</h2>
+        <div class="hub-grid">
+            <div class="hub-card is-soon">
+                <span class="mission-icon" aria-hidden="true">🚨</span>
+                <h3>Cellule de crise</h3>
+                <p>Une cyberattaque frappe une entreprise. À 5, chacun son rôle : il faut décider vite, ensemble.</p>
+                <span class="hub-meta"><span class="badge">Groupe de 5</span><span class="badge">Bientôt</span></span>
+            </div>
+        </div>
+    </section>
 </main>
 
 <footer class="site-footer">

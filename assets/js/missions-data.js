@@ -342,7 +342,372 @@ window.MISSIONS = {
             goal: 'Découvrir chiffrement, empreinte et clé publique/privée avec des analogies simples.',
             tips: ['Pour le César, laisser chercher : la plupart trouvent en moins d\'une minute.', 'Faire le lien avec le cadenas HTTPS de la mission Réseau et avec WhatsApp/Signal (chiffrement de bout en bout).']
         }
+    },
+
+    /* ═══════════════════════════════════════════════════════════════════
+       DEUXIÈME CORDÉE (level: 2)
+       Pas de bouton indice ni d'explication après une erreur : l'animateur
+       accompagne. Les « hint » restent dans les données : ils s'affichent
+       uniquement dans l'Espace animateur.
+       ═══════════════════════════════════════════════════════════════════ */
+
+    /* ─────────────── RÉSEAU · niveau 2 ─────────────── */
+    reseau2: {
+        level: 2, n: 1, icon: '🏗️', title: 'L\'architecte du réseau',
+        theme: 'Réseau', duration: '10 min',
+        tagline: 'Concevoir un réseau qui résiste quand une machine tombe.',
+        badge: 'Architecte réseau',
+        steps: [
+            {
+                type: 'info', title: 'Trois zones, trois niveaux de confiance',
+                text: ['La start-up **PixelBox** (inventée) ouvre sa boutique en ligne. C\'est toi qui conçois son réseau.',
+                       'On le découpe en zones : **Internet** (on ne fait confiance à personne), la **DMZ** (ce qui doit être joignable depuis Internet) et le **réseau interne** (les postes et les données). Un **pare-feu** contrôle tout ce qui passe d\'une zone à l\'autre.'],
+                word: { term: 'DMZ', def: 'Zone démilitarisée : une zone tampon qui héberge les serveurs exposés à Internet, isolée du réseau interne.' }
+            },
+            {
+                type: 'assign', title: 'Place chaque élément dans sa zone',
+                text: ['Pour chaque élément, choisis la zone où il doit se trouver, puis vérifie.'],
+                zones: ['Internet', 'DMZ', 'Réseau interne'],
+                items: [
+                    { t: '🌍 Un client qui visite la boutique', zone: 'Internet' },
+                    { t: '🛒 Serveur web de la boutique', zone: 'DMZ' },
+                    { t: '📨 Relais de messagerie', zone: 'DMZ' },
+                    { t: '🗄️ Base de données clients', zone: 'Réseau interne' },
+                    { t: '💻 PC de la comptable', zone: 'Réseau interne' },
+                    { t: '🖨️ Imprimante du bureau', zone: 'Réseau interne' }
+                ],
+                hint: 'Ce qui doit répondre aux internautes va en DMZ ; les données et les postes de travail restent à l\'intérieur.',
+                success: 'Réseau bien découpé : seuls les serveurs qui doivent parler à Internet sont exposés, les données restent à l\'abri.'
+            },
+            {
+                type: 'rules', title: 'Configure le pare-feu',
+                text: ['Par défaut, le pare-feu **bloque tout**. Coche uniquement les flux à autoriser.'],
+                question: 'Quels flux autorises-tu ?',
+                items: [
+                    { t: 'Internet → Serveur web (DMZ) · port 443 (HTTPS)', ok: true, why: 'les clients doivent pouvoir accéder à la boutique.' },
+                    { t: 'Internet → Base de données (interne) · port 3306', why: 'personne sur Internet n\'a à parler directement à la base.' },
+                    { t: 'Serveur web (DMZ) → Base de données (interne) · port 3306', ok: true, why: 'le site a besoin de lire les produits et les commandes.' },
+                    { t: 'Internet → PC de la comptable · port 3389 (bureau à distance)', why: 'un bureau à distance exposé est une porte d\'entrée classique des rançongiciels.' },
+                    { t: 'Réseau interne → Internet · port 443 (navigation web)', ok: true, why: 'les employés doivent pouvoir naviguer.' },
+                    { t: 'Serveur web (DMZ) → Réseau interne · tous les ports', why: 'si le serveur web est piraté, l\'attaquant aurait accès à tout le réseau.' }
+                ],
+                verify: 'Appliquer les règles',
+                hint: 'Autorisés : 443 vers le web, web → base sur 3306, interne → Internet sur 443. Tout le reste reste bloqué.',
+                success: 'Pare-feu bien réglé. C\'est le principe du moindre privilège : tout est fermé, on n\'ouvre que le strict nécessaire.'
+            },
+            {
+                type: 'choice', title: 'Le serveur web est piraté',
+                text: ['Un attaquant prend le contrôle du serveur web de la boutique.'],
+                question: 'Avec ton réseau, jusqu\'où peut-il aller ?',
+                options: [
+                    { t: 'Seulement vers la base de données, et uniquement sur le port 3306', ok: true, why: 'Exact : la segmentation limite les dégâts. C\'est pour ça qu\'on surveille aussi ce flux et qu\'on donne au site un compte de base de données aux droits minimum.' },
+                    { t: 'Partout dans le réseau interne', why: '' },
+                    { t: 'Nulle part : une machine en DMZ ne peut pas être piratée', why: '' }
+                ],
+                hint: 'Regarde les règles que tu as autorisées depuis la DMZ.',
+                word: { term: 'Segmentation', def: 'Découper un réseau en zones séparées par des pare-feux, pour qu\'une machine compromise ne donne pas accès à tout.' }
+            }
+        ],
+        learned: ['On découpe un réseau en zones de confiance : Internet, DMZ, réseau interne.', 'Un pare-feu bloque tout par défaut et n\'ouvre que le nécessaire.', 'La segmentation limite les dégâts quand une machine est piratée.'],
+        job: { title: 'Architecte réseau et sécurité · Administrateur·rice pare-feu', text: 'Ils conçoivent les réseaux des entreprises et règlent les pare-feux pour qu\'une attaque reste contenue.' },
+        facilitator: {
+            goal: 'Comprendre la segmentation (Internet / DMZ / interne) et le moindre privilège sur un pare-feu.',
+            tips: ['Faire le lien avec mes projets OPNsense (section Projets du cyberfolio).', 'Si blocage sur le pare-feu : « Qui a vraiment besoin de parler à qui ? »']
+        }
+    },
+
+    /* ─────────────── DEVSECOPS · niveau 2 ─────────────── */
+    devsecops2: {
+        level: 2, n: 2, icon: '🚰', title: 'Le pipeline qui fuit',
+        theme: 'DevSecOps', duration: '10 min',
+        tagline: 'Trouver les failles dans de vrais fichiers de configuration.',
+        badge: 'Plombier·e DevSecOps',
+        steps: [
+            {
+                type: 'info', title: 'Un pipeline, c\'est du texte',
+                text: ['Sur GitHub, un pipeline est décrit dans un fichier **YAML** : à chaque envoi de code, des machines l\'installent, le testent puis le déploient automatiquement.',
+                       'Pratique… mais une erreur dans ce fichier peut ouvrir une faille sur tout le projet. Ce site utilise exactement ce mécanisme.'],
+                word: { term: 'Workflow', def: 'Fichier qui décrit les étapes automatiques d\'un pipeline GitHub Actions (installation, tests, déploiement).' }
+            },
+            {
+                type: 'spot', title: 'Le fichier de pipeline',
+                text: ['Voici le pipeline de la boutique PixelBox (inventée). Repère les **4 lignes** dangereuses.'],
+                style: 'code', need: 4,
+                items: [
+                    { t: 'on: push', why: '' },
+                    { t: 'permissions: write-all', bad: true, why: 'Le pipeline a tous les droits sur le dépôt. Il faut le strict minimum, par exemple « contents: read ».' },
+                    { t: '  - uses: actions/checkout@<SHA du commit>', why: '' },
+                    { t: '  - uses: super-deploy/action@main', bad: true, why: 'Une action tierce prise sur la branche « main » peut être modifiée à tout moment par son auteur. On l\'épingle sur un SHA de commit.' },
+                    { t: '  - run: npm test', why: '' },
+                    { t: '  - run: deploy --password "Pixel2026!"', bad: true, why: 'Un mot de passe en clair dans le dépôt : toute personne qui lit le code peut l\'utiliser. Il va dans les secrets chiffrés de GitHub.' },
+                    { t: '  - run: curl http://outils-deploiement.net/install.sh | bash', bad: true, why: 'On télécharge un script en HTTP (non chiffré, modifiable en route) et on l\'exécute sans le vérifier.' }
+                ],
+                hint: 'Droits du pipeline, action non épinglée, mot de passe en clair, script téléchargé en HTTP puis exécuté.'
+            },
+            {
+                type: 'spot', title: 'Le Dockerfile',
+                text: ['Le **Dockerfile** décrit le conteneur dans lequel tourne l\'appli. Repère les **4 lignes** à corriger.'],
+                style: 'code', need: 4,
+                items: [
+                    { t: 'FROM node:latest', bad: true, why: '« latest » change sans prévenir : on fige une version précise et maintenue.' },
+                    { t: 'WORKDIR /app', why: '' },
+                    { t: 'COPY . .', bad: true, why: 'Tout le dossier est copié, y compris le fichier .env et ses secrets. Il faut un .dockerignore.' },
+                    { t: 'RUN npm ci', why: '' },
+                    { t: 'ENV DB_PASSWORD=motdepasse123', bad: true, why: 'Le mot de passe reste lisible dans l\'image par quiconque la télécharge.' },
+                    { t: 'USER root', bad: true, why: 'Si l\'appli est piratée, l\'attaquant est administrateur du conteneur. On utilise un utilisateur sans privilèges.' },
+                    { t: 'CMD ["node", "server.js"]', why: '' }
+                ],
+                hint: 'Version non figée, copie de trop de fichiers, mot de passe dans l\'image, utilisateur root.'
+            },
+            {
+                type: 'choice', title: 'Une CVE dans les dépendances',
+                text: ['Le scan des dépendances bloque le pipeline : une bibliothèque utilisée par la boutique a une **faille critique connue**.'],
+                question: 'Que fais-tu ?',
+                options: [
+                    { t: 'Je passe à la version corrigée et je relance les tests', ok: true, why: 'Exact : on corrige à la source, et les tests vérifient que rien n\'est cassé.' },
+                    { t: 'Je désactive le scan pour pouvoir déployer', why: '' },
+                    { t: 'Je déploie : personne ne connaît cette faille', why: '' }
+                ],
+                hint: 'Une faille « connue » est publique : les attaquants la connaissent aussi.',
+                word: { term: 'CVE', def: 'Identifiant public d\'une faille connue (ex. CVE-2021-44228). Les outils de scan comparent tes dépendances à cette liste.' }
+            }
+        ],
+        learned: ['Le fichier de pipeline est aussi sensible que le code.', 'Pas de secret dans un dépôt ou une image : on utilise un coffre à secrets.', 'Versions figées, droits minimum, dépendances à jour.'],
+        job: { title: 'Ingénieur·e DevSecOps · AppSec', text: 'Ils sécurisent la chaîne qui fabrique et livre les logiciels, de la première ligne de code à la production.' },
+        facilitator: {
+            goal: 'Repérer les erreurs classiques dans un workflow GitHub Actions et un Dockerfile.',
+            tips: ['Montrer le vrai workflow du cyberfolio (.github/workflows/security.yml) : actions épinglées par SHA, droits en lecture seule.', 'Expliquer « | bash » avec une image : « tu signes un chèque en blanc ».']
+        }
+    },
+
+    /* ─────────────── OSINT · niveau 2 ─────────────── */
+    osint2: {
+        level: 2, n: 3, icon: '🗂️', title: 'Enquête sur une entreprise',
+        theme: 'OSINT', duration: '10 min',
+        tagline: 'Préparer un test de phishing autorisé avec des infos publiques.',
+        badge: 'Enquêteur·rice confirmé·e',
+        steps: [
+            {
+                type: 'info', title: 'Une mission autorisée',
+                text: ['L\'entreprise **Lumen Logistique** (inventée) t\'a mandaté pour tester la résistance de ses salariés au phishing. Avant d\'écrire le moindre e-mail, tu fais une **reconnaissance** : uniquement avec ce qui est public.',
+                       'Comme pour un pentest, ce travail n\'est légal qu\'avec un accord écrit de l\'entreprise.'],
+                word: { term: 'Reconnaissance', def: 'Première phase d\'un test : collecter des informations publiques sur la cible pour préparer la suite.' }
+            },
+            {
+                type: 'choice', title: 'Une offre d\'emploi bavarde',
+                text: ['Sur un site d\'emploi, tu trouves cette annonce :'],
+                visual: { kind: 'file', name: 'Offre — Technicien·ne support H/F · Lumen Logistique', lines: [
+                    'Missions : support des 80 utilisateurs, gestion des tickets.',
+                    'Environnement : Microsoft 365, VPN Fortinet, GLPI.',
+                    'Rattachement : Karim Haddad, responsable informatique.',
+                    'Candidature : c.martin@lumen-logistique.fr (RH)'
+                ] },
+                question: 'Quelle information rendrait un faux e-mail le plus crédible ?',
+                options: [
+                    { t: 'Les outils : Microsoft 365 et un VPN Fortinet', ok: true, why: 'Exact : un faux message « mise à jour obligatoire du VPN » serait très crédible pour ces salariés. Les offres d\'emploi révèlent souvent l\'environnement technique.' },
+                    { t: 'Le nombre d\'utilisateurs', why: '' },
+                    { t: 'Le mot « tickets »', why: '' }
+                ],
+                hint: 'Un bon phishing parle des outils que la victime utilise vraiment.'
+            },
+            {
+                type: 'choice', title: 'Deviner les adresses e-mail',
+                text: ['La page « Notre équipe » du site présente : **Paul Lemaire** (directeur), **Sophie Bernard** (directrice financière) et **Karim Haddad** (informatique). L\'annonce donnait l\'adresse de la RH, **Claire Martin** : c.martin@lumen-logistique.fr.'],
+                question: 'Quelle est l\'adresse probable de la directrice financière ?',
+                options: [
+                    { t: 's.bernard@lumen-logistique.fr', ok: true, why: 'Oui : une seule adresse suffit pour déduire le format (initiale du prénom + nom). Ça permet de cibler la finance, très visée par les fraudes au virement.' },
+                    { t: 'sophie.bernard@lumen-logistique.fr', why: '' },
+                    { t: 'bernard.s@lumen.fr', why: '' }
+                ],
+                hint: 'Applique le même format que c.martin.'
+            },
+            {
+                type: 'choice', title: 'Les métadonnées d\'un PDF',
+                text: ['Tu télécharges la plaquette commerciale publiée sur le site, et tu regardes ses propriétés :'],
+                visual: { kind: 'file', name: 'Propriétés — Plaquette_Lumen_2026.pdf', lines: [
+                    'Auteur : khaddad',
+                    'Application : Microsoft Word 2013',
+                    'Créé le : 03/02/2026',
+                    'Chemin d\'origine : \\\\SRV-FICHIERS\\Commercial\\Plaquette.docx'
+                ] },
+                question: 'Qu\'est-ce que ce document révèle ?',
+                options: [
+                    { t: 'Un format d\'identifiant, une version de Word ancienne et le nom d\'un serveur interne', ok: true, why: 'Exact : trois informations utiles à un attaquant, publiées sans le vouloir. Word 2013 n\'est plus maintenu par Microsoft.' },
+                    { t: 'Rien : ce ne sont que des informations techniques', why: '' },
+                    { t: 'Seulement la date de création', why: '' }
+                ],
+                hint: 'Regarde chaque ligne : qui, avec quoi, et où le fichier a été créé.',
+                word: { term: 'Métadonnées', def: 'Informations cachées dans un fichier (auteur, logiciel, date, chemin…). À nettoyer avant toute publication.' }
+            },
+            {
+                type: 'choice', title: 'Ton rapport',
+                text: ['Ta reconnaissance est terminée. Avant même d\'envoyer un e-mail de test, tu peux déjà conseiller Lumen.'],
+                question: 'Quelle recommandation est la plus utile ?',
+                options: [
+                    { t: 'Nettoyer les métadonnées, limiter les détails techniques dans les offres et sensibiliser la finance au phishing ciblé', ok: true, why: 'Exact : réduire ce qui est public et préparer les personnes les plus visées.' },
+                    { t: 'Supprimer la page « Notre équipe » et ne plus publier d\'offres d\'emploi', why: '' },
+                    { t: 'Changer le nom de domaine de l\'entreprise', why: '' }
+                ],
+                hint: 'On ne supprime pas tout : on réduit l\'exposition et on forme les gens.'
+            }
+        ],
+        learned: ['Une entreprise se dévoile sans le vouloir : offres d\'emploi, site, documents.', 'Une seule adresse e-mail suffit pour deviner toutes les autres.', 'Les métadonnées des fichiers publiés sont une fuite fréquente.'],
+        job: { title: 'Analyste CTI · Red teamer', text: 'Ils étudient les menaces et simulent de vraies attaques, toujours avec l\'accord de l\'entreprise, pour qu\'elle s\'y prépare.' },
+        facilitator: {
+            goal: 'Comprendre la reconnaissance OSINT sur une organisation et le cadre légal d\'un test d\'ingénierie sociale.',
+            tips: ['Insister sur le mandat écrit : sans lui, c\'est illégal.', 'Faire le lien avec mon projet de cours OSINT (plans de recherche, fiabilité des sources).']
+        }
+    },
+
+    /* ─────────────── PENTEST · niveau 2 ─────────────── */
+    pentest2: {
+        level: 2, n: 4, icon: '💉', title: 'Injection SQL pas à pas',
+        theme: 'Pentest', duration: '10 min',
+        tagline: 'Comprendre la faille web la plus célèbre, puis la corriger.',
+        badge: 'Chasseur·se de failles web',
+        steps: [
+            {
+                type: 'info', title: 'Comment un site vérifie ton mot de passe',
+                text: ['Quand tu te connectes, le site envoie une question à sa base de données, dans un langage appelé **SQL** :'],
+                visual: { kind: 'file', name: 'Requête de connexion', lines: [
+                    "SELECT * FROM utilisateurs",
+                    "WHERE login = 'ce que tu tapes'",
+                    "  AND mdp = 'ce que tu tapes';"
+                ] },
+                word: { term: 'SQL', def: 'Langage utilisé pour interroger une base de données : chercher, ajouter, modifier des informations.' }
+            },
+            {
+                type: 'sqli', title: 'Entre sans le mot de passe',
+                text: ['La boutique **BoutiqueDémo** (simulée, rien n\'est réellement attaqué) construit sa requête en collant ton texte tel quel. Ton objectif : te connecter en tant que **admin** sans connaître son mot de passe.',
+                       'Regarde la requête changer pendant que tu tapes. Que se passe-t-il si tu écris une apostrophe ?'],
+                hint: 'Identifiant : admin\' --   (le « -- » transforme la fin de la requête en commentaire). Autre solution : \' OR \'1\'=\'1 dans le mot de passe.',
+                success: 'Tu es connecté·e comme admin ! Ton apostrophe a fermé le texte, et la vérification du mot de passe a disparu de la requête.'
+            },
+            {
+                type: 'choice', title: 'Pourquoi ça a marché ?',
+                text: ['Repense à la requête que tu as vue s\'afficher.'],
+                question: 'Quelle est la vraie cause de la faille ?',
+                options: [
+                    { t: 'Le site mélange mon texte et le code de la requête', ok: true, why: 'Exact : ce que tu tapes devient du code SQL. C\'est la famille « Injection » du classement OWASP des failles web.' },
+                    { t: 'Le mot de passe de l\'admin était trop court', why: '' },
+                    { t: 'Le site n\'utilise pas HTTPS', why: '' }
+                ],
+                hint: 'Ton texte a changé le sens de la requête.',
+                word: { term: 'OWASP', def: 'Fondation qui publie le classement des failles web les plus critiques (OWASP Top 10), une référence pour les pentesteurs.' }
+            },
+            {
+                type: 'sqli', prepared: true, title: 'Le correctif',
+                text: ['Les développeurs utilisent maintenant une **requête préparée** : la requête et ton texte sont envoyés séparément.',
+                       'Retente exactement la même attaque.'],
+                hint: 'Faire taper admin\' -- : l\'attaque échoue, le texte reste une simple donnée.',
+                success: 'L\'attaque échoue : ton texte est traité comme une donnée, jamais comme du code. C\'est la bonne correction.'
+            },
+            {
+                type: 'choice', title: 'Ta recommandation',
+                text: ['Tu rédiges le rapport de pentest.'],
+                question: 'Que recommandes-tu en priorité ?',
+                options: [
+                    { t: 'Des requêtes préparées partout, et un compte de base de données aux droits minimum', ok: true, why: 'Exact : on corrige la cause, et on limite les dégâts si une autre faille existe.' },
+                    { t: 'Interdire l\'apostrophe dans les formulaires', why: '' },
+                    { t: 'Cacher la page de connexion', why: '' }
+                ],
+                hint: 'On corrige la cause, pas un symptôme. Interdire un caractère se contourne et bloque les « O\'Brien ».'
+            }
+        ],
+        learned: ['Une injection SQL transforme ton texte en code.', 'Une apostrophe qui provoque une erreur est un signal d\'alerte.', 'La correction : les requêtes préparées, pas un filtre sur les caractères.'],
+        job: { title: 'Pentesteur·se web · Chasseur·se de bug bounty', text: 'Ils cherchent ces failles dans les applications des entreprises, avec autorisation, et expliquent comment les corriger.' },
+        facilitator: {
+            goal: 'Comprendre le mécanisme d\'une injection SQL et sa correction par requêtes préparées.',
+            tips: ['Rappeler le cadre légal : tester un site sans autorisation est un délit (art. 323-1 du Code pénal). Pour s\'entraîner : Root-Me, plateformes de CTF.', 'Faire taper une seule apostrophe d\'abord : l\'erreur SQL est le meilleur indice.']
+        }
+    },
+
+    /* ─────────────── CRYPTO · niveau 2 ─────────────── */
+    crypto2: {
+        level: 2, n: 5, icon: '💾', title: 'La fuite de base de données',
+        theme: 'Cryptographie', duration: '10 min',
+        tagline: 'Casser des empreintes, puis découvrir comment les protéger.',
+        badge: 'Gardien·ne des mots de passe',
+        steps: [
+            {
+                type: 'info', title: 'Une base a fuité',
+                text: ['La table des utilisateurs d\'un forum (inventé) circule sur Internet. Les mots de passe n\'y sont pas en clair : seulement leur **empreinte SHA-256**.',
+                       'Mais un attaquant n\'a pas besoin de « défaire » l\'empreinte : il calcule celle de mots de passe courants et compare.'],
+                word: { term: 'Attaque par dictionnaire', def: 'Tester une liste de mots de passe probables en comparant leurs empreintes à celles de la fuite.' }
+            },
+            {
+                type: 'crack', title: 'Lance l\'attaque',
+                text: ['Lance l\'attaque avec la liste ci-dessous et observe le résultat.'],
+                users: [
+                    { u: 'admin', h: '240be518fabd2724' },
+                    { u: 'marilou', h: 'e93e24c1b877a15d' },
+                    { u: 'simon', h: '0065ac2f17d68ac6' },
+                    { u: 'david', h: 'ff204d12e1fb5f85' },
+                    { u: 'nora', h: 'e93e24c1b877a15d' },
+                    { u: 'hugo', h: '5318d40e1a888f48' }
+                ],
+                wordlist: [
+                    { w: '123456', h: '8d969eef6ecad3c2' }, { w: 'motdepasse', h: '967520ae23e8ee14' },
+                    { w: 'admin123', h: '240be518fabd2724' }, { w: 'azerty', h: 'f2d81a260dea8a10' },
+                    { w: 'soleil', h: 'e93e24c1b877a15d' }, { w: 'Sanka2007', h: '0065ac2f17d68ac6' },
+                    { w: 'chocolat', h: '8d16498453b03d44' }, { w: 'iloveyou', h: 'e4ad93ca07acb8d9' }
+                ],
+                hint: 'Il suffit de cliquer sur « Lancer l\'attaque » : 4 mots de passe sur 6 tombent.',
+                success: '4 comptes sur 6 cassés en quelques secondes, avec seulement 8 mots testés.'
+            },
+            {
+                type: 'choice', title: 'Un détail troublant',
+                text: ['Regarde les empreintes de marilou et de nora.'],
+                question: 'Qu\'est-ce que ça signifie ?',
+                options: [
+                    { t: 'Elles ont le même mot de passe', ok: true, why: 'Exact : sans protection supplémentaire, même mot de passe = même empreinte. Casser l\'un, c\'est casser l\'autre.' },
+                    { t: 'C\'est un bug de la base de données', why: '' },
+                    { t: 'Elles ont le même compte', why: '' }
+                ],
+                hint: 'Une empreinte dépend uniquement du texte d\'origine.'
+            },
+            {
+                type: 'crack', salted: true, title: 'Ajoutons du sel',
+                text: ['Le forum stocke désormais chaque mot de passe avec un **sel** : une valeur aléatoire, différente pour chaque utilisateur, ajoutée avant le calcul de l\'empreinte.',
+                       'Mêmes mots de passe qu\'avant. Relance exactement la même attaque.'],
+                users: [
+                    { u: 'admin', salt: 'a3f9', h: 'e1aecdba1e8f3ef5' },
+                    { u: 'marilou', salt: '7c21', h: 'c90a030c49287794' },
+                    { u: 'simon', salt: 'e04b', h: 'e9d94c56bf3aedbb' },
+                    { u: 'david', salt: '19d6', h: '196008bcf4071ae4' },
+                    { u: 'nora', salt: '5b8e', h: '2f1f3a6d562bfcc2' },
+                    { u: 'hugo', salt: 'c2a7', h: '4af5d365dcffb918' }
+                ],
+                wordlist: [
+                    { w: '123456', h: '8d969eef6ecad3c2' }, { w: 'motdepasse', h: '967520ae23e8ee14' },
+                    { w: 'admin123', h: '240be518fabd2724' }, { w: 'azerty', h: 'f2d81a260dea8a10' },
+                    { w: 'soleil', h: 'e93e24c1b877a15d' }, { w: 'Sanka2007', h: '0065ac2f17d68ac6' },
+                    { w: 'chocolat', h: '8d16498453b03d44' }, { w: 'iloveyou', h: 'e4ad93ca07acb8d9' }
+                ],
+                hint: 'Lancer l\'attaque : aucun mot de passe ne tombe, et marilou et nora n\'ont plus la même empreinte.',
+                success: 'Plus rien ne correspond, et marilou et nora n\'ont plus la même empreinte. L\'attaquant devrait tout recalculer pour chaque utilisateur, avec son sel.'
+            },
+            {
+                type: 'choice', title: 'Comment stocker les mots de passe ?',
+                text: ['Tu conseilles les développeurs du forum.'],
+                question: 'Quelle méthode recommandes-tu ?',
+                options: [
+                    { t: 'Un algorithme lent conçu pour ça (Argon2, bcrypt), avec un sel unique par utilisateur', ok: true, why: 'Exact : le sel empêche les comparaisons en masse, et la lenteur rend chaque essai coûteux pour l\'attaquant.' },
+                    { t: 'SHA-256 sans sel, c\'est déjà illisible', why: '' },
+                    { t: 'En clair, mais dans une base protégée par un mot de passe', why: '' }
+                ],
+                hint: 'Il faut à la fois un sel et un algorithme volontairement lent.',
+                word: { term: 'Sel', def: 'Valeur aléatoire unique ajoutée à chaque mot de passe avant le calcul de l\'empreinte.' }
+            }
+        ],
+        learned: ['Une empreinte sans sel se casse avec une simple liste de mots courants.', 'Même mot de passe = même empreinte, sauf avec un sel.', 'Pour stocker des mots de passe : Argon2 ou bcrypt, avec un sel unique.'],
+        job: { title: 'Ingénieur·e sécurité · Cryptographe', text: 'Ils choisissent et vérifient la façon dont les applications protègent les données sensibles, comme les mots de passe.' },
+        facilitator: {
+            goal: 'Comprendre l\'attaque par dictionnaire, le rôle du sel et des algorithmes de hachage lents.',
+            tips: ['Faire remarquer que « Sanka2007 » vient de la mission OSINT : les missions se répondent.', 'Rappeler le lien avec haveibeenpwned.com pour vérifier si son e-mail a fuité.']
+        }
     }
+
 };
 
 /* Profil fictif utilisé par la mission OSINT (visual.kind = "posts") */

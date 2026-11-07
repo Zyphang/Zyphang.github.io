@@ -67,6 +67,8 @@
     }
 
     var M = MISSIONS[id];
+    var EXPERT = M.level === 2;          // Deuxième cordée : pas d'indice, l'animateur accompagne
+    var RETRY = 'Ce n\'est pas ça. Réessaie, ou demande à l\'animateur.';
     document.title = M.title + ' — Atelier cyber';
     document.body.setAttribute('data-mission', id);
 
@@ -77,7 +79,7 @@
     var icon = el('span', 'mission-icon', M.icon);
     icon.setAttribute('aria-hidden', 'true');
     var headText = el('div');
-    headText.appendChild(el('p', 'eyebrow', 'Mission ' + M.n + ' · ' + M.theme + ' · ≈ ' + M.duration));
+    headText.appendChild(el('p', 'eyebrow', (EXPERT ? 'Deuxième cordée · Mission ' : 'Mission ') + M.n + ' · ' + M.theme + ' · ≈ ' + M.duration));
     headText.appendChild(el('h1', 'mission-title', M.title));
     head.appendChild(icon);
     head.appendChild(headText);
@@ -159,7 +161,7 @@
     function renderChoice(container, step, fb, onSolved) {
         if (step.question) container.appendChild(el('p', 'question', step.question));
         var grid = el('div', 'options');
-        step.options.forEach(function (o) {
+        shuffled(step.options).forEach(function (o) {   // ordre différent à chaque partie
             var b = button(o.t, 'option');
             b.addEventListener('click', function () {
                 if (o.ok) {
@@ -170,7 +172,7 @@
                 } else {
                     b.classList.add('is-wrong');
                     b.disabled = true;
-                    feedback(fb, 'retry', o.why + ' Essaie encore !');
+                    feedback(fb, 'retry', EXPERT ? RETRY : o.why + ' Essaie encore !');
                 }
             });
             grid.appendChild(b);
@@ -217,7 +219,7 @@
         var found = 0;
         var counter = el('p', 'counter', 'Trouvées : 0 / ' + step.need);
         var list = el('ul', 'spot spot-' + (step.style || 'code'));
-        step.items.forEach(function (it) {
+        (step.style === 'posts' ? shuffled(step.items) : step.items).forEach(function (it) {
             var li = el('li');
             var b = button(it.t, 'spot-item' + (step.style === 'code' ? ' mono' : ''));
             b.addEventListener('click', function () {
@@ -233,7 +235,7 @@
                     } else feedback(fb, 'good', it.why);
                 } else {
                     b.classList.add('is-safe');
-                    feedback(fb, 'retry', it.why + ' Cherche encore.');
+                    feedback(fb, 'retry', EXPERT ? 'Pas celle-là. Cherche encore, ou demande à l\'animateur.' : it.why + ' Cherche encore.');
                 }
             });
             li.appendChild(b);
@@ -257,7 +259,7 @@
         container.appendChild(browser);
 
         var grid = el('div', 'options');
-        step.attempts.forEach(function (a) {
+        (first.urlSuffix ? step.attempts : shuffled(step.attempts)).forEach(function (a) {
             var b = button(a.urlSuffix ? 'id = ' + a.label : 'Essayer « ' + a.label + ' »', 'option mono');
             b.addEventListener('click', function () {
                 if (a.urlSuffix) url.textContent = step.url + a.urlSuffix;
@@ -347,6 +349,215 @@
         container.appendChild(after);
     }
 
+    /* ── Niveau 2 : placer des éléments dans des zones ───────────── */
+    function renderAssign(container, step, fb, onSolved) {
+        var choices = {};
+        var rows = [];
+        var items = shuffled(step.items);
+        var table = el('div', 'assign');
+        items.forEach(function (it, idx) {
+            var row = el('div', 'assign-row');
+            row.appendChild(el('span', 'assign-label', it.t));
+            var group = el('div', 'assign-zones');
+            group.setAttribute('role', 'group');
+            group.setAttribute('aria-label', 'Zone pour ' + it.t);
+            step.zones.forEach(function (z) {
+                var b = button(z, 'zone-btn');
+                b.setAttribute('aria-pressed', 'false');
+                b.addEventListener('click', function () {
+                    choices[idx] = z;
+                    Array.prototype.forEach.call(group.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+                    row.classList.remove('is-wrong');
+                });
+                group.appendChild(b);
+            });
+            row.appendChild(group);
+            rows.push(row);
+            table.appendChild(row);
+        });
+        var check = button('Vérifier mon réseau', 'btn');
+        check.addEventListener('click', function () {
+            var missing = items.filter(function (_, i) { return !choices[i]; }).length;
+            if (missing) { feedback(fb, 'retry', 'Place encore ' + missing + ' élément' + (missing > 1 ? 's' : '') + ' avant de vérifier.'); return; }
+            var wrong = 0;
+            items.forEach(function (it, i) {
+                var bad = choices[i] !== it.zone;
+                if (bad) wrong++;
+                rows[i].classList.toggle('is-wrong', bad && !EXPERT);
+            });
+            if (wrong === 0) {
+                rows.forEach(function (r) { r.classList.add('is-right'); r.querySelectorAll('button').forEach(function (x) { x.disabled = true; }); });
+                check.disabled = true;
+                feedback(fb, 'good', step.success);
+                onSolved();
+            } else {
+                feedback(fb, 'retry', wrong + ' élément' + (wrong > 1 ? 's sont mal placés' : ' est mal placé') + '. ' + (EXPERT ? 'Réessaie, ou demande à l\'animateur.' : 'Corrige les lignes en orange.'));
+            }
+        });
+        container.appendChild(table);
+        container.appendChild(check);
+    }
+
+    /* ── Niveau 2 : cocher les bonnes règles (ex. pare-feu) ──────── */
+    function renderRules(container, step, fb, onSolved) {
+        if (step.question) container.appendChild(el('p', 'question', step.question));
+        var items = shuffled(step.items);   // ordre différent à chaque partie
+        var list = el('ul', 'rules');
+        var boxes = [];
+        items.forEach(function (it, i) {
+            var li = el('li', 'rule');
+            var id = 'rule-' + stepIdx + '-' + i;
+            var input = el('input');
+            input.type = 'checkbox'; input.id = id;
+            var label = el('label', 'mono', it.t);
+            label.htmlFor = id;
+            li.appendChild(input); li.appendChild(label);
+            boxes.push(input);
+            list.appendChild(li);
+        });
+        var check = button(step.verify || 'Appliquer les règles', 'btn');
+        check.addEventListener('click', function () {
+            var errors = 0;
+            items.forEach(function (it, i) { if (boxes[i].checked !== !!it.ok) errors++; });
+            if (errors === 0) {
+                check.disabled = true;
+                boxes.forEach(function (b) { b.disabled = true; });
+                items.forEach(function (it, i) {
+                    var li = list.children[i];
+                    li.classList.add(it.ok ? 'is-allowed' : 'is-blocked');
+                    li.appendChild(el('span', 'rule-why', (it.ok ? '✓ Autorisé : ' : '✕ Bloqué : ') + it.why));
+                });
+                feedback(fb, 'good', step.success);
+                onSolved();
+            } else {
+                feedback(fb, 'retry', errors + ' règle' + (errors > 1 ? 's ne sont pas bonnes' : ' n\'est pas bonne') + '. Réessaie' + (EXPERT ? ', ou demande à l\'animateur.' : '.'));
+            }
+        });
+        container.appendChild(list);
+        container.appendChild(check);
+    }
+
+    /* ── Niveau 2 : formulaire de connexion simulé (injection SQL) ── */
+    // Aucune base de données : la page construit la requête sous tes yeux et la « juge » elle-même.
+    var SQL_USERS = ['admin', 'marilou', 'simon', 'david'];
+    function simulateLogin(login, pass, prepared) {
+        if (prepared) return { ok: false, msg: '❌ Identifiants incorrects. La requête préparée a traité ton texte comme une simple donnée.' };
+        var commented = login.match(/^([^']*)'\s*(--|#)/);
+        if (commented) {
+            var u = commented[1].trim().toLowerCase();
+            if (SQL_USERS.indexOf(u) !== -1) return { ok: u === 'admin', user: u, msg: '✅ Connecté·e en tant que « ' + u + ' » sans connaître son mot de passe !' };
+            return { ok: false, msg: '❌ Aucun utilisateur « ' + commented[1] + ' ». La suite a bien été mise en commentaire, mais ce compte n\'existe pas.' };
+        }
+        if (/'\s*or\s*'?1'?\s*=\s*'?1/i.test(login + ' ' + pass)) return { ok: true, user: 'admin', msg: '✅ Connecté·e en tant que « admin » : la condition est toujours vraie, la base renvoie le premier compte.' };
+        var quotes = (login.match(/'/g) || []).length + (pass.match(/'/g) || []).length;
+        if (quotes % 2 === 1) return { ok: false, msg: '⚠️ Erreur SQL : syntaxe incorrecte. Ton apostrophe a cassé la requête… c\'est un indice que le site est vulnérable.' };
+        return { ok: false, msg: '❌ Identifiants incorrects.' };
+    }
+
+    function renderSqli(container, step, fb, onSolved) {
+        var form = el('div', 'sqli');
+        function field(labelText, id, type) {
+            var wrap = el('div', 'field');
+            var lab = el('label', null, labelText); lab.htmlFor = id;
+            var input = el('input'); input.id = id; input.type = type || 'text';
+            input.autocomplete = 'off'; input.spellcheck = false; input.maxLength = 60;
+            input.setAttribute('autocapitalize', 'off');
+            wrap.appendChild(lab); wrap.appendChild(input);
+            form.appendChild(wrap);
+            return input;
+        }
+        var login = field('Identifiant', 'sqli-login-' + stepIdx);
+        var pass = field('Mot de passe', 'sqli-pass-' + stepIdx);
+        var qLabel = el('p', 'label-small', step.prepared ? 'Requête envoyée à la base (préparée) :' : 'Requête envoyée à la base :');
+        var query = el('p', 'mono-box sql');
+        var params = step.prepared ? el('p', 'mono-box sql sql-params') : null;
+        function render() {
+            if (step.prepared) {
+                query.textContent = "SELECT * FROM utilisateurs WHERE login = ? AND mdp = ?;";
+                params.textContent = 'Paramètres : [ "' + login.value + '", "' + pass.value + '" ]';
+            } else {
+                query.textContent = "SELECT * FROM utilisateurs WHERE login = '" + login.value + "' AND mdp = '" + pass.value + "';";
+            }
+        }
+        login.addEventListener('input', render);
+        pass.addEventListener('input', render);
+        var go = button('Se connecter', 'btn');
+        var result = el('div', 'browser-body sqli-result');
+        result.hidden = true;
+        var tried = false;
+        go.addEventListener('click', function () {
+            var r = simulateLogin(login.value, pass.value, !!step.prepared);
+            result.hidden = false;
+            result.textContent = '';
+            result.appendChild(el('p', 'browser-strong', r.msg));
+            if (step.prepared) {
+                if (/'/.test(login.value + pass.value)) {
+                    if (!tried) { tried = true; feedback(fb, 'good', step.success); onSolved(); }
+                } else feedback(fb, 'retry', 'Tente la même attaque qu\'à l\'étape précédente pour voir si elle marche encore.');
+                return;
+            }
+            if (r.ok && !tried) { tried = true; feedback(fb, 'good', step.success); go.disabled = true; onSolved(); }
+            else if (!r.ok) fb.hidden = true;
+        });
+        form.appendChild(go);
+        container.appendChild(form);
+        container.appendChild(qLabel);
+        container.appendChild(query);
+        if (params) container.appendChild(params);
+        container.appendChild(result);
+        render();
+    }
+
+    /* ── Niveau 2 : attaque par dictionnaire sur une fuite simulée ── */
+    function renderCrack(container, step, fb, onSolved) {
+        var table = el('table', 'hashes leak');
+        var thead = el('thead'), htr = el('tr');
+        (step.salted ? ['Utilisateur', 'Sel', 'Empreinte', 'Mot de passe'] : ['Utilisateur', 'Empreinte', 'Mot de passe'])
+            .forEach(function (t) { htr.appendChild(el('th', null, t)); });
+        thead.appendChild(htr); table.appendChild(thead);
+        var tbody = el('tbody');
+        var cells = [];
+        step.users.forEach(function (u) {
+            var tr = el('tr');
+            tr.appendChild(el('td', 'mono', u.u));
+            if (step.salted) tr.appendChild(el('td', 'mono', u.salt));
+            tr.appendChild(el('td', 'mono hash-cell', u.h + '…'));
+            var pw = el('td', 'mono pw-cell', '?');
+            tr.appendChild(pw);
+            cells.push({ row: tr, pw: pw, h: u.h });
+            tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        var wrap = el('div', 'packets');
+        wrap.appendChild(table);
+
+        container.appendChild(el('p', 'label-small', 'Liste de mots de passe courants : ' + step.wordlist.map(function (w) { return w.w; }).join(', ')));
+        var run = button('▶ Lancer l\'attaque par dictionnaire', 'btn');
+        var log = el('p', 'mono-box crack-log', 'En attente…');
+        container.appendChild(wrap);
+        container.appendChild(run);
+        container.appendChild(log);
+
+        run.addEventListener('click', function () {
+            run.disabled = true;
+            var i = 0, found = 0;
+            var timer = window.setInterval(function () {
+                if (i >= step.wordlist.length) {
+                    window.clearInterval(timer);
+                    log.textContent = step.wordlist.length + ' mots testés · ' + found + ' mot' + (found > 1 ? 's' : '') + ' de passe trouvé' + (found > 1 ? 's' : '');
+                    feedback(fb, 'good', step.success);
+                    onSolved();
+                    return;
+                }
+                var w = step.wordlist[i++];
+                log.textContent = 'Essai : ' + w.w + '  →  ' + w.h + '…';
+                cells.forEach(function (c) {
+                    if (c.h === w.h) { c.pw.textContent = w.w; c.row.classList.add('is-cracked'); found++; }
+                });
+            }, 350);
+        });
+    }
+
     /* ── Rendu d'une étape ───────────────────────────────────────── */
     function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
 
@@ -373,7 +584,7 @@
 
         var nav = el('div', 'step-nav');
         var hintBtn = null;
-        if (step.hint) {
+        if (step.hint && !EXPERT) {
             hintBtn = button('💡 Un indice ?', 'btn btn-ghost');
             hintBtn.addEventListener('click', function () {
                 feedback(fb, 'hint', step.hint);
@@ -397,6 +608,10 @@
 
         switch (step.type) {
             case 'choice': renderChoice(zone, step, fb, solved); break;
+            case 'assign': renderAssign(zone, step, fb, solved); break;
+            case 'rules':  renderRules(zone, step, fb, solved); break;
+            case 'sqli':   renderSqli(zone, step, fb, solved); break;
+            case 'crack':  renderCrack(zone, step, fb, solved); break;
             case 'order':  renderOrder(zone, step, fb, solved); break;
             case 'spot':   renderSpot(zone, step, fb, solved); break;
             case 'tries':  renderTries(zone, step, fb, solved); break;

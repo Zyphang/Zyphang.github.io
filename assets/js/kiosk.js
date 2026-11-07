@@ -45,8 +45,12 @@
         Array.prototype.forEach.call(cards, function (c) {
             c.classList.toggle('is-done', got.indexOf(c.getAttribute('data-mission-card')) !== -1);
         });
-        var count = document.getElementById('badge-count');
-        if (count) count.textContent = String(got.length);
+        // Un compteur par section : nombre de missions terminées dans cette section
+        Array.prototype.forEach.call(document.querySelectorAll('[data-badge-count]'), function (n) {
+            var sec = document.getElementById(n.getAttribute('data-badge-count'));
+            var section = sec ? sec.closest('section') : null;
+            n.textContent = String(section ? section.querySelectorAll('.hub-card.is-done').length : 0);
+        });
     }
     markCards();
 

@@ -90,6 +90,7 @@ html.js .atelier .nav-menu { display: none; }
 .try .field-row { margin-top: .75rem; }
 
 .idle-note { margin-top: 1rem; text-align: center; color: var(--text-muted); font-size: .9rem; }
+.idle-note.warn { margin: 0 0 1.75rem; }
 
 @media (max-width: 560px) {
     .tablist-big [role="tab"] { flex-direction: column; gap: .3rem; font-size: .85rem; padding: .6rem .4rem; }
